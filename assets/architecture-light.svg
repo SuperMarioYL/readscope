@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" role="img" aria-label="ReadScope architecture" data-palette="7de656-6ae78b-dbf6ac-447cdb53bf04">
+  <style>
+    text { font-family: -apple-system,'Segoe UI','PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif; }
+    .mono { font-family: 'SF Mono','JetBrains Mono','Cascadia Code',ui-monospace,Menlo,Consolas,monospace; }
+    .drift1 { animation: drift1 9s ease-in-out infinite alternate; }
+    .drift2 { animation: drift2 9s ease-in-out infinite alternate; }
+    .pulse  { animation: pulse 3s ease-in-out infinite; }
+    .pulse2 { animation: pulse2 3s ease-in-out infinite; }
+    .flow   { stroke-dasharray: 6 8; animation: march 1.6s linear infinite; }
+    .flow-slow { stroke-dasharray: 5 9; animation: march 3.2s linear infinite; }
+    .blink  { animation: blink 2.4s steps(2, jump-none) infinite; }
+    @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(14px,-18px); } }
+    @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-12px,16px); } }
+    @keyframes pulse  { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+    @keyframes pulse2 { 0%,100% { opacity: .9; } 45% { opacity: .25; } }
+    @keyframes march  { to { stroke-dashoffset: -28; } }
+    @keyframes blink  { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    @media (prefers-reduced-motion: reduce) {
+      .drift1,.drift2,.pulse,.pulse2,.flow,.flow-slow,.blink { animation: none; }
+    }</style>
+  <rect width="1200" height="660" fill="#fafef9"/>
+  <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <radialGradient id="halo" cx="50%" cy="42%" r="55%">
+    <stop offset="0%" stop-color="#468231" stop-opacity="0.16"/>
+    <stop offset="60%" stop-color="#3c824f" stop-opacity="0.05"/>
+    <stop offset="100%" stop-color="#fafef9" stop-opacity="0"/>
+  </radialGradient>
+  <g><line x1="60" y1="0" x2="60" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="180" y1="0" x2="180" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="300" y1="0" x2="300" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="420" y1="0" x2="420" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="540" y1="0" x2="540" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="660" y1="0" x2="660" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="780" y1="0" x2="780" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="900" y1="0" x2="900" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="1020" y1="0" x2="1020" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="1140" y1="0" x2="1140" y2="660" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="60" x2="1200" y2="60" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="180" x2="1200" y2="180" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="300" x2="1200" y2="300" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="420" x2="1200" y2="420" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="540" x2="1200" y2="540" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/><g class="drift1"><circle cx="611" cy="350" r="1" fill="#468231" opacity="0.1"/><circle cx="994" cy="449" r="1.7" fill="#468231" opacity="0.15000000000000002"/><circle cx="633" cy="618" r="2.4" fill="#468231" opacity="0.2"/><circle cx="240" cy="357" r="1" fill="#468231" opacity="0.25"/><circle cx="1051" cy="86" r="1.7" fill="#468231" opacity="0.1"/><circle cx="74" cy="425" r="2.4" fill="#468231" opacity="0.15000000000000002"/><circle cx="733" cy="34" r="1" fill="#468231" opacity="0.2"/><circle cx="460" cy="13" r="1.7" fill="#468231" opacity="0.25"/><circle cx="591" cy="462" r="2.4" fill="#468231" opacity="0.1"/><circle cx="714" cy="401" r="1" fill="#468231" opacity="0.15000000000000002"/><circle cx="253" cy="90" r="1.7" fill="#468231" opacity="0.2"/><circle cx="820" cy="309" r="2.4" fill="#468231" opacity="0.25"/><circle cx="911" cy="198" r="1" fill="#468231" opacity="0.1"/></g><g class="drift2"><circle cx="474" cy="377" r="1.7" fill="#468231" opacity="0.15000000000000002"/><circle cx="433" cy="146" r="2.4" fill="#468231" opacity="0.2"/><circle cx="980" cy="605" r="1" fill="#468231" opacity="0.25"/><circle cx="791" cy="574" r="1.7" fill="#468231" opacity="0.1"/><circle cx="1154" cy="353" r="2.4" fill="#468231" opacity="0.15000000000000002"/><circle cx="513" cy="202" r="1" fill="#468231" opacity="0.2"/><circle cx="920" cy="261" r="1.7" fill="#468231" opacity="0.25"/><circle cx="1131" cy="310" r="2.4" fill="#468231" opacity="0.1"/><circle cx="14" cy="329" r="1" fill="#468231" opacity="0.15000000000000002"/><circle cx="1073" cy="258" r="1.7" fill="#468231" opacity="0.2"/><circle cx="500" cy="557" r="2.4" fill="#468231" opacity="0.25"/><circle cx="1151" cy="46" r="1" fill="#468231" opacity="0.1"/><circle cx="294" cy="305" r="1.7" fill="#468231" opacity="0.15000000000000002"/></g></g>
+
+  <text x="40" y="46" font-size="22" font-weight="600" fill="#182a1c">架构 <tspan fill="#5d7a6b" font-size="16">· 单二进制，两个角色</tspan></text>
+
+  <!-- host zone -->
+  <rect x="40" y="74" width="300" height="168" rx="10" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.5"/>
+  <text x="60" y="104" font-size="15" fill="#5d7a6b">宿主机 · Host</text>
+  <rect x="60" y="122" width="260" height="44" rx="10" fill="#f6fdf3" stroke="#468231" stroke-width="1.5"/>
+  <text x="190" y="149" text-anchor="middle" class="mono" font-size="16" fill="#182a1c">readscope run -- claude …</text>
+  <rect x="50" y="182" width="280" height="40" rx="10" fill="#fafef9" stroke="#d7f7cb" stroke-width="1.5"/>
+  <text x="190" y="207" text-anchor="middle" class="mono" font-size="13" fill="#5d7a6b">docker run · SYS_ADMIN · /dev/fuse</text>
+
+  <!-- source volume -->
+  <rect x="40" y="470" width="300" height="130" rx="10" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.5"/>
+  <text x="60" y="500" font-size="15" fill="#5d7a6b">原始工作区 · /src（bind mount）</text>
+  <g class="mono" font-size="14">
+    <text x="66" y="530" fill="#182a1c">.env  ← 原始路径可读（对照组）</text>
+    <text x="66" y="556" fill="#182a1c">src/  ·  docs/  ·  .ssh/</text>
+    <text x="66" y="582" fill="#5d7a6b">门面不是沙箱边界，拒绝发生在视图层</text>
+  </g>
+
+  <!-- container zone -->
+  <rect x="400" y="74" width="760" height="526" rx="10" fill="#f9fef7" stroke="#468231" stroke-width="1.5"/>
+  <text x="424" y="104" font-size="15" fill="#5d7a6b">容器内 · 同一个 readscope 二进制</text>
+
+  <rect x="424" y="122" width="220" height="74" rx="10" fill="#f6fdf3" stroke="#3c824f" stroke-width="1.5"/>
+  <text x="534" y="152" text-anchor="middle" font-size="16" fill="#182a1c">policy loader</text>
+  <text x="534" y="176" text-anchor="middle" class="mono" font-size="13" fill="#5d7a6b">readscope.yaml → 规则集</text>
+
+  <rect x="916" y="122" width="220" height="74" rx="10" fill="#f6fdf3" stroke="#3c824f" stroke-width="1.5"/>
+  <text x="1026" y="152" text-anchor="middle" font-size="16" fill="#182a1c">grant store <tspan fill="#5d7a6b" font-size="13">授权存储</tspan></text>
+  <text x="1026" y="176" text-anchor="middle" class="mono" font-size="13" fill="#5d7a6b">内存 + grants.jsonl · TTL</text>
+
+  <!-- facade core -->
+  <g filter="url(#glow)">
+    <rect x="560" y="250" width="340" height="150" rx="10" fill="#fafef9" stroke="#468231" stroke-width="1.5"/>
+  </g>
+  <text x="730" y="290" text-anchor="middle" font-size="20" font-weight="600" fill="#182a1c">FUSE 门面 <tspan fill="#468231">/workspace</tspan></text>
+  <g class="mono" font-size="14">
+    <text x="730" y="322" text-anchor="middle" fill="#182a1c">允许路径：读写透传</text>
+    <text x="730" y="348" text-anchor="middle" fill="#468231">其余 open/stat → EACCES</text>
+    <text x="730" y="374" text-anchor="middle" fill="#5d7a6b">被拒条目不进目录列表 · 授权只授 read</text>
+  </g>
+
+  <rect x="424" y="452" width="220" height="74" rx="10" fill="#f6fdf3" stroke="#3c824f" stroke-width="1.5"/>
+  <text x="534" y="482" text-anchor="middle" font-size="16" fill="#182a1c">runner <tspan fill="#5d7a6b" font-size="13">运行器</tspan></text>
+  <text x="534" y="506" text-anchor="middle" class="mono" font-size="13" fill="#5d7a6b">agent 进程 · cwd=视图</text>
+
+  <rect x="916" y="452" width="220" height="74" rx="10" fill="#f6fdf3" stroke="#3c824f" stroke-width="1.5"/>
+  <text x="1026" y="482" text-anchor="middle" font-size="16" fill="#182a1c">manifest writer <tspan fill="#5d7a6b" font-size="13">清单写盘</tspan></text>
+  <text x="1026" y="506" text-anchor="middle" class="mono" font-size="13" fill="#5d7a6b">decisions.jsonl → manifest</text>
+
+  <!-- wires -->
+  <path d="M 190 166 L 190 210 M 190 210 C 190 260 340 260 400 262" fill="none" stroke="#468231" stroke-width="1.6" class="flow"/>
+  <path d="M 400 262 C 470 262 480 240 560 240 L 560 250" fill="none" stroke="#468231" stroke-width="1.6" class="flow"/>
+  <text x="470" y="252" font-size="13" fill="#5d7a6b" class="mono">挂载视图</text>
+
+  <path d="M 534 196 L 534 250" fill="none" stroke="#468231" stroke-width="1.6" class="flow"/>
+  <path d="M 1026 196 L 1026 250" fill="none" stroke="#3c824f" stroke-width="1.6" class="flow"/>
+  <path d="M 534 400 L 534 452" fill="none" stroke="#468231" stroke-width="1.6" class="flow"/>
+  <path d="M 1026 452 L 1026 400" fill="none" stroke="#3c824f" stroke-width="1.6" class="flow-slow"/>
+  <path d="M 644 489 L 916 489" fill="none" stroke="#468231" stroke-width="1.6" class="flow"/>
+  <text x="780" y="480" text-anchor="middle" font-size="13" fill="#5d7a6b" class="mono">判定实时追加</text>
+
+  <path d="M 730 400 L 730 452 M 730 452 C 730 440 640 430 640 452" fill="none" stroke="#3c824f" stroke-width="1.6" class="flow-slow"/>
+  <text x="742" y="436" font-size="13" fill="#5d7a6b" class="mono">y/N · TTL</text>
+
+  <path d="M 340 535 L 400 535 M 400 535 C 430 535 470 520 560 430" fill="none" stroke="#d7f7cb" stroke-width="1.6" class="flow-slow"/>
+  <text x="352" y="522" font-size="13" fill="#5d7a6b" class="mono">透传</text>
+
+  <!-- legend -->
+  <g font-size="13" fill="#5d7a6b">
+    <text x="40" y="640" class="mono">policy = default: deny + glob allowlist</text>
+    <text x="1160" y="640" text-anchor="end" class="mono">同一二进制：宿主机编排，容器内执行</text>
+  </g>
+
+</svg>

@@ -1,0 +1,38 @@
+{
+  "mode": "auto",
+  "id": "7de656-6ae78b-dbf6ac-447cdb53bf04",
+  "identity": "https://github.com/supermarioyl/readscope",
+  "primary": "#7de656",
+  "secondary": "#6ae78b",
+  "highlight": "#dbf6ac",
+  "dark": {
+    "bg": "#060c0d",
+    "panel": "#0e1717",
+    "code": "#0c1713",
+    "ink": "#f8fdee",
+    "muted": "#9db9a8",
+    "line": "#203c1d",
+    "primary": "#7de656",
+    "secondary": "#6ae78b",
+    "highlight": "#dbf6ac",
+    "accent": "#7de656",
+    "buttonStart": "#488432",
+    "buttonEnd": "#3d8450",
+    "buttonText": "#ffffff"
+  },
+  "light": {
+    "bg": "#fafef9",
+    "panel": "#f9fef7",
+    "code": "#f6fdf3",
+    "ink": "#182a1c",
+    "muted": "#5d7a6b",
+    "line": "#d7f7cb",
+    "primary": "#468231",
+    "secondary": "#3c824f",
+    "highlight": "#6c7954",
+    "accent": "#468231",
+    "buttonStart": "#488432",
+    "buttonEnd": "#3d8450",
+    "buttonText": "#ffffff"
+  }
+}

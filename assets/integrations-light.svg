@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-label="ReadScope capabilities and integration" data-palette="7de656-6ae78b-dbf6ac-447cdb53bf04">
+  <style>
+    text { font-family: -apple-system,'Segoe UI','PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif; }
+    .mono { font-family: 'SF Mono','JetBrains Mono','Cascadia Code',ui-monospace,Menlo,Consolas,monospace; }
+    .drift1 { animation: drift1 9s ease-in-out infinite alternate; }
+    .drift2 { animation: drift2 9s ease-in-out infinite alternate; }
+    .pulse  { animation: pulse 3s ease-in-out infinite; }
+    .pulse2 { animation: pulse2 3s ease-in-out infinite; }
+    .flow   { stroke-dasharray: 6 8; animation: march 1.6s linear infinite; }
+    .flow-slow { stroke-dasharray: 5 9; animation: march 3.2s linear infinite; }
+    .blink  { animation: blink 2.4s steps(2, jump-none) infinite; }
+    @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(14px,-18px); } }
+    @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-12px,16px); } }
+    @keyframes pulse  { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+    @keyframes pulse2 { 0%,100% { opacity: .9; } 45% { opacity: .25; } }
+    @keyframes march  { to { stroke-dashoffset: -28; } }
+    @keyframes blink  { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    @media (prefers-reduced-motion: reduce) {
+      .drift1,.drift2,.pulse,.pulse2,.flow,.flow-slow,.blink { animation: none; }
+    }</style>
+  <rect width="1200" height="640" fill="#fafef9"/>
+  <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <radialGradient id="halo" cx="50%" cy="42%" r="55%">
+    <stop offset="0%" stop-color="#468231" stop-opacity="0.16"/>
+    <stop offset="60%" stop-color="#3c824f" stop-opacity="0.05"/>
+    <stop offset="100%" stop-color="#fafef9" stop-opacity="0"/>
+  </radialGradient>
+  <g><line x1="60" y1="0" x2="60" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="180" y1="0" x2="180" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="300" y1="0" x2="300" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="420" y1="0" x2="420" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="540" y1="0" x2="540" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="660" y1="0" x2="660" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="780" y1="0" x2="780" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="900" y1="0" x2="900" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="1020" y1="0" x2="1020" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="1140" y1="0" x2="1140" y2="640" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="60" x2="1200" y2="60" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="180" x2="1200" y2="180" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="300" x2="1200" y2="300" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="420" x2="1200" y2="420" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="540" x2="1200" y2="540" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/><g class="drift1"><circle cx="891" cy="590" r="1" fill="#468231" opacity="0.1"/><circle cx="194" cy="449" r="1.7" fill="#468231" opacity="0.15000000000000002"/><circle cx="53" cy="578" r="2.4" fill="#468231" opacity="0.2"/><circle cx="380" cy="117" r="1" fill="#468231" opacity="0.25"/><circle cx="651" cy="486" r="1.7" fill="#468231" opacity="0.1"/><circle cx="374" cy="465" r="2.4" fill="#468231" opacity="0.15000000000000002"/><circle cx="213" cy="194" r="1" fill="#468231" opacity="0.2"/><circle cx="260" cy="33" r="1.7" fill="#468231" opacity="0.25"/><circle cx="151" cy="22" r="2.4" fill="#468231" opacity="0.1"/><circle cx="454" cy="441" r="1" fill="#468231" opacity="0.15000000000000002"/><circle cx="153" cy="150" r="1.7" fill="#468231" opacity="0.2"/><circle cx="600" cy="469" r="2.4" fill="#468231" opacity="0.25"/><circle cx="191" cy="98" r="1" fill="#468231" opacity="0.1"/></g><g class="drift2"><circle cx="1014" cy="477" r="1.7" fill="#468231" opacity="0.15000000000000002"/><circle cx="913" cy="526" r="2.4" fill="#468231" opacity="0.2"/><circle cx="620" cy="125" r="1" fill="#468231" opacity="0.25"/><circle cx="471" cy="294" r="1.7" fill="#468231" opacity="0.1"/><circle cx="214" cy="113" r="2.4" fill="#468231" opacity="0.15000000000000002"/><circle cx="333" cy="582" r="1" fill="#468231" opacity="0.2"/><circle cx="760" cy="21" r="1.7" fill="#468231" opacity="0.25"/><circle cx="71" cy="310" r="2.4" fill="#468231" opacity="0.1"/><circle cx="514" cy="349" r="1" fill="#468231" opacity="0.15000000000000002"/><circle cx="993" cy="498" r="1.7" fill="#468231" opacity="0.2"/><circle cx="560" cy="177" r="2.4" fill="#468231" opacity="0.25"/><circle cx="811" cy="286" r="1" fill="#468231" opacity="0.1"/><circle cx="254" cy="305" r="1.7" fill="#468231" opacity="0.15000000000000002"/></g></g>
+
+  <text x="40" y="46" font-size="22" font-weight="600" fill="#182a1c">能力与集成 <tspan fill="#5d7a6b" font-size="16">· 一个核心原语，周围都是既有设施</tspan></text>
+
+  <path d="M 600 320 Q 626 225 600 130" fill="none" stroke="#468231" stroke-width="1.5" class="flow" opacity="0.9"/>
+<path d="M 600 320 Q 773.2219219164377 289.6657657493134 930 210" fill="none" stroke="#3c824f" stroke-width="1.5" class="flow-slow" opacity="0.9"/>
+<path d="M 600 320 Q 794.2926829268292 390.3658536585366 1000 410" fill="none" stroke="#468231" stroke-width="1.5" class="flow" opacity="0.9"/>
+<path d="M 600 320 Q 637.425678304764 437.8996123972777 720 530" fill="none" stroke="#3c824f" stroke-width="1.5" class="flow-slow" opacity="0.9"/>
+<path d="M 600 320 Q 455.200540550412 388.62300301726174 340 500" fill="none" stroke="#468231" stroke-width="1.5" class="flow" opacity="0.9"/>
+<path d="M 600 320 Q 383.51294332306617 264.23841563084824 160 260" fill="none" stroke="#3c824f" stroke-width="1.5" class="flow-slow" opacity="0.9"/>
+
+  <g filter="url(#glow)">
+    <circle cx="600" cy="320" r="118" fill="#f9fef7" stroke="#468231" stroke-width="2.2"/>
+    <circle cx="600" cy="320" r="146" fill="none" stroke="#d7f7cb" stroke-width="1" class="pulse"/>
+  </g>
+  <text x="600" y="298" text-anchor="middle" font-size="26" font-weight="700" fill="#182a1c">Read<tspan fill="#468231">Scope</tspan></text>
+  <text x="600" y="328" text-anchor="middle" font-size="14" fill="#5d7a6b">核心原语</text>
+  <text x="600" y="356" text-anchor="middle" class="mono" font-size="13.5" fill="#468231">least-privilege facade</text>
+  <text x="600" y="378" text-anchor="middle" class="mono" font-size="13.5" fill="#3c824f">+ per-run manifest</text>
+
+  <g>
+      <rect x="508.3" y="96" width="183.39999999999998" height="68" rx="12" fill="#f9fef7" stroke="#468231" stroke-width="1.8"/>
+      <text x="600" y="124" text-anchor="middle" font-size="17" font-weight="600" fill="#182a1c">任意命令</text>
+      <text x="600" y="148" text-anchor="middle" font-size="12.5" fill="#5d7a6b" class="mono">any command · 零配合</text>
+    </g>
+<g>
+      <rect x="821.9" y="176" width="216.2" height="68" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+      <text x="930" y="204" text-anchor="middle" font-size="17" font-weight="600" fill="#182a1c">Docker 容器</text>
+      <text x="930" y="228" text-anchor="middle" font-size="12.5" fill="#5d7a6b" class="mono">SYS_ADMIN · /dev/fuse</text>
+    </g>
+<g>
+      <rect x="891.9" y="376" width="216.2" height="68" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+      <text x="1000" y="404" text-anchor="middle" font-size="17" font-weight="600" fill="#182a1c">策略 YAML</text>
+      <text x="1000" y="428" text-anchor="middle" font-size="12.5" fill="#5d7a6b" class="mono">policies/default.yaml</text>
+    </g>
+<g>
+      <rect x="528" y="496" width="384" height="68" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+      <text x="720" y="524" text-anchor="middle" font-size="17" font-weight="600" fill="#182a1c">exposure-manifest v0</text>
+      <text x="720" y="548" text-anchor="middle" font-size="12.5" fill="#5d7a6b" class="mono">schema 可校验</text>
+    </g>
+<g>
+      <rect x="190.5" y="466" width="299" height="68" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+      <text x="340" y="494" text-anchor="middle" font-size="17" font-weight="600" fill="#182a1c">decisions.jsonl</text>
+      <text x="340" y="518" text-anchor="middle" font-size="12.5" fill="#5d7a6b" class="mono">判定日志 · 可重放</text>
+    </g>
+<g>
+      <rect x="68.30000000000001" y="226" width="183.39999999999998" height="68" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+      <text x="160" y="254" text-anchor="middle" font-size="17" font-weight="600" fill="#182a1c">单二进制</text>
+      <text x="160" y="278" text-anchor="middle" font-size="12.5" fill="#5d7a6b" class="mono">goreleaser · 6 平台</text>
+    </g>
+
+  <text x="40" y="622" font-size="13" fill="#5d7a6b">v0.1 范围：CLI + 门面 + 清单格式 · 托管策略与审批服务器为 v0.2 路线图（见 README）</text>
+
+</svg>
