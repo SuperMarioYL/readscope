@@ -145,7 +145,7 @@ func TestGlobSemantics(t *testing.T) {
 	}{
 		{"src/**", "src/a.go", true},
 		{"src/**", "src/a/b/c.go", true},
-		{"src/**", "src", false},
+		{"src/**", "src", true},
 		{"src/**", "other/a.go", false},
 		{"a/**/b", "a/b", true},
 		{"a/**/b", "a/x/y/b", true},

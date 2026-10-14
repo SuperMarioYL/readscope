@@ -137,3 +137,17 @@ func (s *Store) Active(at time.Time) []Grant {
 	sort.Slice(out, func(i, j int) bool { return out[i].Path < out[j].Path })
 	return out
 }
+
+// All returns every recorded grant sorted by path, including ones whose
+// TTL already expired - the manifest must show what the run was granted,
+// not just what is still valid.
+func (s *Store) All() []Grant {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	out := make([]Grant, 0, len(s.grants))
+	for _, g := range s.grants {
+		out = append(out, g)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Path < out[j].Path })
+	return out
+}

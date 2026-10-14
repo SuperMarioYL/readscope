@@ -18,6 +18,7 @@ package facade
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"syscall"
 	"time"
@@ -105,12 +106,14 @@ func New(opts Options) (*Facade, error) {
 	return f, nil
 }
 
-// Mount mounts the facade at mountpoint and starts serving.
+// Mount mounts the facade at mountpoint and starts serving. FUSE
+// request logging is enabled when READSCOPE_DEBUG is set.
 func (f *Facade) Mount(mountpoint string) (*fuse.Server, error) {
 	noTimeout := time.Duration(0)
 	server, err := fs.Mount(mountpoint, f.RootNode, &fs.Options{
 		MountOptions: fuse.MountOptions{
 			Options: []string{"fsname=readscope", "subtype=readscope"},
+			Debug:   os.Getenv("READSCOPE_DEBUG") != "",
 		},
 		EntryTimeout: &noTimeout,
 		AttrTimeout:  &noTimeout,

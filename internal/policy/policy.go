@@ -8,6 +8,8 @@
 // Glob semantics:
 //   - a pattern containing "/" matches the workspace-relative path, where
 //     "**" crosses directory separators and "*" does not;
+//   - a pattern ending in "/**" also matches the directory itself, so
+//     "src/**" keeps "src" listable;
 //   - a pattern without "/" matches the base name at any depth, so
 //     "*.pem" also covers "certs/server.pem".
 package policy
@@ -176,9 +178,6 @@ type globMatcher struct {
 func (m *globMatcher) match(path string) bool { return m.re.MatchString(path) }
 
 func compileGlob(pattern string) (*globMatcher, error) {
-	if strings.Contains(pattern, "..") {
-		return nil, fmt.Errorf("glob %q must not contain \"..\"", pattern)
-	}
 	src, err := globRegexp(pattern)
 	if err != nil {
 		return nil, err
@@ -192,10 +191,35 @@ func compileGlob(pattern string) (*globMatcher, error) {
 
 // globRegexp translates a glob to an anchored regexp source. A pattern
 // without "/" also matches any base name, so "*.pem" covers "a/b.pem"
-// and a root-level "a.pem".
+// and a root-level "a.pem". A pattern ending in "/**" also matches the
+// directory itself: a projected directory must be listable for its
+// contents to be usable.
 func globRegexp(pattern string) (string, error) {
+	if strings.HasSuffix(pattern, "/**") && !strings.HasSuffix(pattern, "/**/**") {
+		prefix, err := translateGlob(strings.TrimSuffix(pattern, "/**"))
+		if err != nil {
+			return "", err
+		}
+		return "^(?:" + prefix + "(?:/.*)?)?$", nil
+	}
+	mid, err := translateGlob(pattern)
+	if err != nil {
+		return "", err
+	}
+	if !strings.Contains(pattern, "/") {
+		// Base-name pattern: allow any directory prefix, including none.
+		return "^(?s:.*/)?" + mid + "$", nil
+	}
+	return "^" + mid + "$", nil
+}
+
+// translateGlob converts one glob (without anchoring) to regexp source:
+// "**" crosses directory separators, "*" and "?" stay within one.
+func translateGlob(pattern string) (string, error) {
+	if strings.Contains(pattern, "..") {
+		return "", fmt.Errorf("glob %q must not contain \"..\"", pattern)
+	}
 	var b strings.Builder
-	b.WriteString("^")
 	i := 0
 	for i < len(pattern) {
 		c := pattern[i]
@@ -204,8 +228,7 @@ func globRegexp(pattern string) (string, error) {
 			if i+1 < len(pattern) && pattern[i+1] == '*' {
 				b.WriteString(".*")
 				i += 2
-				// Collapse a following slash so "src/**" matches
-				// "src/a.go" but not "src" itself.
+				// Collapse a following slash so "a/**/b" matches "a/b".
 				if i < len(pattern) && pattern[i] == '/' {
 					b.WriteString("/?")
 					i++
@@ -222,11 +245,5 @@ func globRegexp(pattern string) (string, error) {
 			i++
 		}
 	}
-	b.WriteString("$")
-	src := b.String()
-	if !strings.Contains(pattern, "/") {
-		// Base-name pattern: allow any directory prefix, including none.
-		src = strings.Replace(src, "^", "^(?s:.*/)?", 1)
-	}
-	return src, nil
+	return b.String(), nil
 }

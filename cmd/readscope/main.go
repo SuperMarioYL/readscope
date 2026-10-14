@@ -304,10 +304,9 @@ func runAgent(flags *runFlags, agentCmd []string) error {
 // allGrantRecords snapshots every grant recorded during the run,
 // including ones whose TTL already expired.
 func allGrantRecords(store *grant.Store) []manifest.GrantRecord {
-	now := time.Now().Add(10 * 365 * 24 * time.Hour) // include expired grants
-	active := store.Active(now)
-	out := make([]manifest.GrantRecord, 0, len(active))
-	for _, g := range active {
+	recorded := store.All()
+	out := make([]manifest.GrantRecord, 0, len(recorded))
+	for _, g := range recorded {
 		out = append(out, manifest.GrantRecord{
 			Path:      g.Path,
 			TTL:       g.TTL,
@@ -320,9 +319,10 @@ func allGrantRecords(store *grant.Store) []manifest.GrantRecord {
 	return out
 }
 
-// interactiveIO reports whether prompts may be shown and where answers
-// should come from: the controlling terminal when there is one, stdin
-// otherwise.
+// interactiveIO reports whether grant prompts may be shown and where
+// answers come from: the controlling terminal when there is one (the
+// agent child shares stdin, so the tty is the reliable channel), stdin
+// otherwise (pipes; EOF or a non-answer denies).
 func interactiveIO(noInteractive bool) (bool, io.Reader) {
 	if noInteractive {
 		return false, strings.NewReader("")
@@ -330,10 +330,7 @@ func interactiveIO(noInteractive bool) (bool, io.Reader) {
 	if tty, err := os.Open("/dev/tty"); err == nil {
 		return true, tty
 	}
-	if st, err := os.Stdin.Stat(); err == nil && st.Mode()&os.ModeCharDevice != 0 {
-		return true, os.Stdin
-	}
-	return false, strings.NewReader("")
+	return true, os.Stdin
 }
 
 type exitCodeError int

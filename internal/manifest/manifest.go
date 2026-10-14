@@ -232,15 +232,25 @@ func Load(path string) (*Manifest, error) {
 	return &m, nil
 }
 
-// FindInDir locates the exposure manifest inside a run directory.
+// FindInDir locates the exposure manifest inside a run directory. A
+// runs root also works: the newest run directory containing a manifest
+// wins, so `readscope inspect <runs-dir>` summarizes the latest run.
 func FindInDir(dir string) (string, error) {
-	matches, err := filepath.Glob(filepath.Join(dir, "exposure-manifest-*.json"))
+	direct, err := filepath.Glob(filepath.Join(dir, "exposure-manifest-*.json"))
 	if err != nil {
 		return "", err
 	}
-	if len(matches) == 0 {
+	if len(direct) > 0 {
+		sort.Strings(direct)
+		return direct[len(direct)-1], nil
+	}
+	nested, err := filepath.Glob(filepath.Join(dir, "*", "exposure-manifest-*.json"))
+	if err != nil {
+		return "", err
+	}
+	if len(nested) == 0 {
 		return "", fmt.Errorf("no exposure-manifest-*.json in %s", dir)
 	}
-	sort.Strings(matches)
-	return matches[len(matches)-1], nil
+	sort.Strings(nested)
+	return nested[len(nested)-1], nil
 }

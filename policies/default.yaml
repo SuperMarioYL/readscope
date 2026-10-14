@@ -5,11 +5,12 @@
 # 空 verbs 的规则表示"显式拒绝"，用于阻止后面的规则放行。
 #
 # glob 约定：
-#   - 含 "/" 的模式匹配工作区相对路径，"**" 跨目录，"*" 不跨目录；
+#   - 含 "/" 的模式匹配工作区相对路径，"**" 跨目录（以 "/**" 结尾时目录
+#     本身也被匹配，保证目录可见可列），"*" 不跨目录；
 #   - 不含 "/" 的模式匹配任意层级的基础文件名（*.pem 也覆盖 certs/server.pem）。
 #
-# 敏感路径（.env*、*.pem、*.key、.aws/、.ssh/、.git-credentials、.git/config）
-# 不在任何允许规则里，即使后面的规则想放行也会被显式拒绝拦下。
+# 规则顺序：先显式拒绝敏感路径，再放行源码读写，最后是只读的文档与
+# 构建清单——越宽的只读规则必须放在源码读写之后，避免遮蔽写入。
 
 default: deny
 rules:
@@ -28,16 +29,6 @@ rules:
     explain: "git 凭据存储"
   - glob: ".git/config"
     explain: "git 配置（含远端令牌）"
-
-  # ---- 允许：文档只读 ----
-  - glob: "*.md"
-    verbs: [read]
-  - glob: "docs/**"
-    verbs: [read]
-  - glob: "LICENSE*"
-    verbs: [read]
-  - glob: "Makefile"
-    verbs: [read, write]
 
   # ---- 允许：常见源码路径读写 ----
   - glob: "src/**"
@@ -67,7 +58,17 @@ rules:
   - glob: "**/*.java"
     verbs: [read, write]
 
-  # ---- 允许：构建与依赖清单（只读，防止 agent 改动依赖）----
+  # ---- 允许：文档只读 ----
+  - glob: "*.md"
+    verbs: [read]
+  - glob: "docs/**"
+    verbs: [read]
+  - glob: "LICENSE*"
+    verbs: [read]
+
+  # ---- 允许：Makefile 可写，构建与依赖清单只读（防止 agent 改动依赖）----
+  - glob: "Makefile"
+    verbs: [read, write]
   - glob: "go.mod"
     verbs: [read]
   - glob: "go.sum"
