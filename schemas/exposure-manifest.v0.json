@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/SuperMarioYL/readscope/schemas/exposure-manifest.v0.json",
+  "title": "ReadScope Exposure Manifest v0",
+  "description": "Per-run record of what a Coding Agent run could read in the projected workspace: every read verdict, the read-only grants that were approved inline, the environment variable names the run received, and the digest of the policy that governed the run. The manifest is derived by replaying the run's decision log (decisions.jsonl), so the same log always reproduces the same manifest.",
+  "type": "object",
+  "required": ["schema", "run_id", "agent_cmd", "policy_digest", "env_var_names", "reads", "grants", "started_at", "ended_at"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "readscope.exposure-manifest/v0",
+      "description": "Format identifier. v0 is the format shipped with ReadScope 0.1.x."
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[0-9]{8}-[0-9]{6}-[0-9a-f]{6}$",
+      "description": "Unique run identifier: UTC timestamp plus random suffix, e.g. 20261015-090000-a1b2c3."
+    },
+    "agent_cmd": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "The agent command line that was executed inside the view."
+    },
+    "model_target": {
+      "type": "string",
+      "description": "Optional label of the model the run targeted (as passed via --model); recorded, never validated."
+    },
+    "policy_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "SHA-256 of the exact policy file bytes that governed the run."
+    },
+    "env_var_names": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Names of every environment variable the agent process received, sorted and deduplicated. Values are never recorded."
+    },
+    "reads": {
+      "type": "array",
+      "description": "One record per unique path opened for reading, in decision order. The last verdict a path received during the run wins.",
+      "items": {
+        "type": "object",
+        "required": ["path", "verdict", "at"],
+        "properties": {
+          "path": { "type": "string", "description": "Workspace-relative path." },
+          "verdict": {
+            "type": "string",
+            "enum": ["allowed", "granted", "denied"],
+            "description": "allowed: policy permits; granted: approved inline during the run; denied: refused (EACCES)."
+          },
+          "at": { "type": "string", "format": "date-time", "description": "When the recorded verdict was decided (RFC 3339)." }
+        }
+      }
+    },
+    "grants": {
+      "type": "array",
+      "description": "Every read-only grant approved during the run, sorted by path. Includes grants whose TTL has since expired.",
+      "items": {
+        "type": "object",
+        "required": ["path", "ttl", "granted_at", "expires_at", "approver", "reason"],
+        "properties": {
+          "path": { "type": "string", "description": "Granted workspace-relative path; a directory grant covers everything below it." },
+          "ttl": { "type": "string", "description": "Requested lifetime as a Go duration string, e.g. 30m0s." },
+          "granted_at": { "type": "string", "format": "date-time" },
+          "expires_at": { "type": "string", "format": "date-time" },
+          "approver": { "type": "string", "description": "Who approved: terminal, or an operator name via READSCOPE_APPROVER." },
+          "reason": { "type": "string", "description": "Free-text justification captured at approval time." }
+        }
+      }
+    },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" }
+  }
+}

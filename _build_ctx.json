@@ -1,0 +1,16 @@
+{
+  "buildDir": "/Users/yulei/workspace/ai-radar/workspace/builds/readscope--wsxf4m9d",
+  "mvpFile": "/Users/yulei/workspace/ai-radar/workspace/projects/scan-2026-10-15-0400/F-plan/top_k-winner-wsxf4m9d/mvp_plan.md",
+  "lockFile": "/Users/yulei/workspace/ai-radar/workspace/projects/scan-2026-10-15-0400/F-plan/top_k-winner-wsxf4m9d/mvp_plan.md.sha256.lock",
+  "planDir": "/Users/yulei/workspace/ai-radar/workspace/projects/scan-2026-10-15-0400/F-plan/top_k-winner-wsxf4m9d",
+  "scanId": "scan-2026-10-15-0400",
+  "needId": "need_wsxf4m9d",
+  "track": "top_k",
+  "targetCompleteness": "m1+m2",
+  "buildName": "readscope--wsxf4m9d",
+  "slicesFile": "",
+  "commonPrompt": "/Users/yulei/workspace/ai-radar/workspace/builds/readscope--wsxf4m9d/.builder_prompt_common.md",
+  "workspace": "/Users/yulei/workspace/ai-radar/workspace",
+  "workflow_script": "/Users/yulei/workspace/ai-radar/skills/ai-radar-build/build_workflow.js",
+  "maxKickbacks": 2
+}

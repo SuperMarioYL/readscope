@@ -1,0 +1,80 @@
+# ReadScope 默认策略 v0
+#
+# 语义：default-deny（默认拒绝）。规则按顺序匹配，第一条命中的规则生效；
+# 规则只声明它允许的动作（verbs），没被任何规则覆盖的路径一律拒绝（EACCES）。
+# 空 verbs 的规则表示"显式拒绝"，用于阻止后面的规则放行。
+#
+# glob 约定：
+#   - 含 "/" 的模式匹配工作区相对路径，"**" 跨目录，"*" 不跨目录；
+#   - 不含 "/" 的模式匹配任意层级的基础文件名（*.pem 也覆盖 certs/server.pem）。
+#
+# 敏感路径（.env*、*.pem、*.key、.aws/、.ssh/、.git-credentials、.git/config）
+# 不在任何允许规则里，即使后面的规则想放行也会被显式拒绝拦下。
+
+default: deny
+rules:
+  # ---- 显式拒绝：敏感凭据与密钥，永远不可读写 ----
+  - glob: ".env*"
+    explain: "dotenv 环境文件与密钥"
+  - glob: "*.pem"
+    explain: "证书与私钥"
+  - glob: "*.key"
+    explain: "私钥文件"
+  - glob: ".aws/**"
+    explain: "AWS 凭据目录"
+  - glob: ".ssh/**"
+    explain: "SSH 密钥与配置"
+  - glob: ".git-credentials"
+    explain: "git 凭据存储"
+  - glob: ".git/config"
+    explain: "git 配置（含远端令牌）"
+
+  # ---- 允许：文档只读 ----
+  - glob: "*.md"
+    verbs: [read]
+  - glob: "docs/**"
+    verbs: [read]
+  - glob: "LICENSE*"
+    verbs: [read]
+  - glob: "Makefile"
+    verbs: [read, write]
+
+  # ---- 允许：常见源码路径读写 ----
+  - glob: "src/**"
+    verbs: [read, write]
+  - glob: "cmd/**"
+    verbs: [read, write]
+  - glob: "internal/**"
+    verbs: [read, write]
+  - glob: "pkg/**"
+    verbs: [read, write]
+  - glob: "lib/**"
+    verbs: [read, write]
+  - glob: "app/**"
+    verbs: [read, write]
+  - glob: "**/*.go"
+    verbs: [read, write]
+  - glob: "**/*.py"
+    verbs: [read, write]
+  - glob: "**/*.ts"
+    verbs: [read, write]
+  - glob: "**/*.tsx"
+    verbs: [read, write]
+  - glob: "**/*.js"
+    verbs: [read, write]
+  - glob: "**/*.rs"
+    verbs: [read, write]
+  - glob: "**/*.java"
+    verbs: [read, write]
+
+  # ---- 允许：构建与依赖清单（只读，防止 agent 改动依赖）----
+  - glob: "go.mod"
+    verbs: [read]
+  - glob: "go.sum"
+    verbs: [read]
+  - glob: "package.json"
+    verbs: [read]
+  - glob: "pyproject.toml"
+    verbs: [read]
+  - glob: "Cargo.toml"
+    verbs: [read]
