@@ -4,6 +4,7 @@ BUILD_SETUP_NEXT_STEPS.md
 .spawn.*
 .builder_*
 .build_metadata*
+.build_ctx*
 .stage_*
 .claude/
 CLAUDE.md
