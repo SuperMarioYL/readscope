@@ -22,7 +22,7 @@ import (
 type Grant struct {
 	// Path is the granted workspace-relative path. A grant on a
 	// directory covers everything below it.
-	Path      string    `json:"path"`
+	Path string `json:"path"`
 	// TTL is the requested lifetime as written in the approval flow.
 	TTL       string    `json:"ttl"`
 	GrantedAt time.Time `json:"granted_at"`

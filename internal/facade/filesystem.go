@@ -349,10 +349,10 @@ type filteredDir struct {
 }
 
 var (
-	_ fs.DirStream         = (*filteredDir)(nil)
-	_ fs.FileReaddirenter  = (*filteredDir)(nil)
-	_ fs.FileReleasedirer  = (*filteredDir)(nil)
-	_ fs.FileSeekdirer     = (*filteredDir)(nil)
+	_ fs.DirStream        = (*filteredDir)(nil)
+	_ fs.FileReaddirenter = (*filteredDir)(nil)
+	_ fs.FileReleasedirer = (*filteredDir)(nil)
+	_ fs.FileSeekdirer    = (*filteredDir)(nil)
 )
 
 func (d *filteredDir) Readdirent(ctx context.Context) (*fuse.DirEntry, syscall.Errno) {

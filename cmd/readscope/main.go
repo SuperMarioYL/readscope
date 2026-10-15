@@ -83,14 +83,14 @@ func newVersionCmd() *cobra.Command {
 // ---- run ----
 
 type runFlags struct {
-	src          string
-	policyPath   string
-	mountpoint   string
-	outDir       string
-	modelTarget  string
-	ttl          time.Duration
+	src           string
+	policyPath    string
+	mountpoint    string
+	outDir        string
+	modelTarget   string
+	ttl           time.Duration
 	noInteractive bool
-	docker       bool
+	docker        bool
 }
 
 func newRunCmd() *cobra.Command {

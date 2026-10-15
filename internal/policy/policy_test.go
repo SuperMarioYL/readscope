@@ -111,7 +111,7 @@ func TestDigestStableAndSensitive(t *testing.T) {
 	if !strings.HasPrefix(a.Digest(), "sha256:") || len(a.Digest()) != len("sha256:")+64 {
 		t.Fatalf("digest format unexpected: %s", a.Digest())
 	}
-	c, err := Load(writeTemp(t, samplePolicy + "\n"))
+	c, err := Load(writeTemp(t, samplePolicy+"\n"))
 	if err != nil {
 		t.Fatal(err)
 	}
