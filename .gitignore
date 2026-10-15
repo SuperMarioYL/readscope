@@ -20,3 +20,4 @@ CLAUDE.md
 
 # demo recording intermediates
 docs/assets/*.txt
+_build_ctx.json
