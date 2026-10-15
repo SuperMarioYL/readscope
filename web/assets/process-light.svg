@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-label="ReadScope process" data-palette="7de656-6ae78b-dbf6ac-447cdb53bf04">
+  <style>
+    text { font-family: -apple-system,'Segoe UI','PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif; }
+    .mono { font-family: 'SF Mono','JetBrains Mono','Cascadia Code',ui-monospace,Menlo,Consolas,monospace; }
+    .drift1 { animation: drift1 9s ease-in-out infinite alternate; }
+    .drift2 { animation: drift2 9s ease-in-out infinite alternate; }
+    .pulse  { animation: pulse 3s ease-in-out infinite; }
+    .pulse2 { animation: pulse2 3s ease-in-out infinite; }
+    .flow   { stroke-dasharray: 6 8; animation: march 1.6s linear infinite; }
+    .flow-slow { stroke-dasharray: 5 9; animation: march 3.2s linear infinite; }
+    .blink  { animation: blink 2.4s steps(2, jump-none) infinite; }
+    @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(14px,-18px); } }
+    @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-12px,16px); } }
+    @keyframes pulse  { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+    @keyframes pulse2 { 0%,100% { opacity: .9; } 45% { opacity: .25; } }
+    @keyframes march  { to { stroke-dashoffset: -28; } }
+    @keyframes blink  { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    @media (prefers-reduced-motion: reduce) {
+      .drift1,.drift2,.pulse,.pulse2,.flow,.flow-slow,.blink { animation: none; }
+    }</style>
+  <rect width="1200" height="620" fill="#fafef9"/>
+  <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <radialGradient id="halo" cx="50%" cy="42%" r="55%">
+    <stop offset="0%" stop-color="#468231" stop-opacity="0.16"/>
+    <stop offset="60%" stop-color="#3c824f" stop-opacity="0.05"/>
+    <stop offset="100%" stop-color="#fafef9" stop-opacity="0"/>
+  </radialGradient>
+  <g><line x1="60" y1="0" x2="60" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="180" y1="0" x2="180" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="300" y1="0" x2="300" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="420" y1="0" x2="420" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="540" y1="0" x2="540" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="660" y1="0" x2="660" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="780" y1="0" x2="780" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="900" y1="0" x2="900" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="1020" y1="0" x2="1020" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="1140" y1="0" x2="1140" y2="620" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="60" x2="1200" y2="60" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="180" x2="1200" y2="180" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="300" x2="1200" y2="300" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="420" x2="1200" y2="420" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="540" x2="1200" y2="540" stroke="#d7f7cb" stroke-width="0.5" opacity="0.5"/><g class="drift1"><circle cx="15" cy="230" r="1" fill="#468231" opacity="0.1"/><circle cx="1146" cy="169" r="1.7" fill="#468231" opacity="0.15000000000000002"/><circle cx="1109" cy="578" r="2.4" fill="#468231" opacity="0.2"/><circle cx="768" cy="157" r="1" fill="#468231" opacity="0.25"/><circle cx="655" cy="206" r="1.7" fill="#468231" opacity="0.1"/><circle cx="666" cy="25" r="2.4" fill="#468231" opacity="0.15000000000000002"/><circle cx="289" cy="314" r="1" fill="#468231" opacity="0.2"/><circle cx="1088" cy="373" r="1.7" fill="#468231" opacity="0.25"/><circle cx="415" cy="302" r="2.4" fill="#468231" opacity="0.1"/><circle cx="846" cy="601" r="1" fill="#468231" opacity="0.15000000000000002"/><circle cx="449" cy="170" r="1.7" fill="#468231" opacity="0.2"/><circle cx="968" cy="109" r="2.4" fill="#468231" opacity="0.25"/><circle cx="1095" cy="518" r="1" fill="#468231" opacity="0.1"/></g><g class="drift2"><circle cx="926" cy="97" r="1.7" fill="#468231" opacity="0.15000000000000002"/><circle cx="389" cy="146" r="2.4" fill="#468231" opacity="0.2"/><circle cx="128" cy="565" r="1" fill="#468231" opacity="0.25"/><circle cx="1135" cy="254" r="1.7" fill="#468231" opacity="0.1"/><circle cx="306" cy="313" r="2.4" fill="#468231" opacity="0.15000000000000002"/><circle cx="1149" cy="242" r="1" fill="#468231" opacity="0.2"/><circle cx="148" cy="541" r="1.7" fill="#468231" opacity="0.25"/><circle cx="235" cy="110" r="2.4" fill="#468231" opacity="0.1"/><circle cx="686" cy="49" r="1" fill="#468231" opacity="0.15000000000000002"/><circle cx="569" cy="458" r="1.7" fill="#468231" opacity="0.2"/><circle cx="288" cy="37" r="2.4" fill="#468231" opacity="0.25"/><circle cx="1015" cy="86" r="1" fill="#468231" opacity="0.1"/><circle cx="986" cy="505" r="1.7" fill="#468231" opacity="0.15000000000000002"/></g></g>
+
+  <text x="40" y="46" font-size="22" font-weight="600" fill="#182a1c">一次运行 <tspan fill="#5d7a6b" font-size="16">· 从默认拒绝到可审计留痕</tspan></text>
+
+  
+    <g>
+      <rect x="40" y="90" width="204" height="96" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+      <circle cx="66" cy="116" r="13" fill="#f6fdf3" stroke="#3c824f" stroke-width="1.4"/>
+      <text x="66" y="121" text-anchor="middle" font-size="14" fill="#468231" class="mono">1</text>
+      <text x="88" y="121" font-size="16" font-weight="600" fill="#182a1c">加载策略</text>
+      <text x="58" y="148" font-size="13" fill="#5d7a6b" class="mono">policy.Load()</text>
+      <text x="58" y="170" font-size="12.5" fill="#5d7a6b">default: deny + 规则集</text>
+    </g>
+  
+    <g>
+      <rect x="276" y="90" width="204" height="96" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+      <circle cx="302" cy="116" r="13" fill="#f6fdf3" stroke="#3c824f" stroke-width="1.4"/>
+      <text x="302" y="121" text-anchor="middle" font-size="14" fill="#468231" class="mono">2</text>
+      <text x="324" y="121" font-size="16" font-weight="600" fill="#182a1c">挂载视图</text>
+      <text x="294" y="148" font-size="13" fill="#5d7a6b" class="mono">fuse mount</text>
+      <text x="294" y="170" font-size="12.5" fill="#5d7a6b">cwd = /workspace 视图</text>
+    </g>
+  
+    <g>
+      <rect x="512" y="90" width="204" height="96" rx="12" fill="#f9fef7" stroke="#468231" stroke-width="1.8"/>
+      <circle cx="538" cy="116" r="13" fill="#f6fdf3" stroke="#468231" stroke-width="1.4"/>
+      <text x="538" y="121" text-anchor="middle" font-size="14" fill="#468231" class="mono">3</text>
+      <text x="560" y="121" font-size="16" font-weight="600" fill="#182a1c">运行 Agent</text>
+      <text x="530" y="148" font-size="13" fill="#5d7a6b" class="mono">exec agent</text>
+      <text x="530" y="170" font-size="12.5" fill="#5d7a6b">任意命令，零配合</text>
+    </g>
+  
+    <g>
+      <rect x="748" y="90" width="204" height="96" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+      <circle cx="774" cy="116" r="13" fill="#f6fdf3" stroke="#3c824f" stroke-width="1.4"/>
+      <text x="774" y="121" text-anchor="middle" font-size="14" fill="#468231" class="mono">4</text>
+      <text x="796" y="121" font-size="16" font-weight="600" fill="#182a1c">清单落盘</text>
+      <text x="766" y="148" font-size="13" fill="#5d7a6b" class="mono">manifest</text>
+      <text x="766" y="170" font-size="12.5" fill="#5d7a6b">重放 decisions.jsonl 生成</text>
+    </g>
+  
+    <g>
+      <rect x="984" y="90" width="204" height="96" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+      <circle cx="1010" cy="116" r="13" fill="#f6fdf3" stroke="#3c824f" stroke-width="1.4"/>
+      <text x="1010" y="121" text-anchor="middle" font-size="14" fill="#468231" class="mono">5</text>
+      <text x="1032" y="121" font-size="16" font-weight="600" fill="#182a1c">摘要</text>
+      <text x="1002" y="148" font-size="13" fill="#5d7a6b" class="mono">inspect</text>
+      <text x="1002" y="170" font-size="12.5" fill="#5d7a6b">一屏回答：能读到什么</text>
+    </g>
+
+  <path d="M 244 138 L 276 138" stroke="#468231" stroke-width="1.8" class="flow" fill="none"/>
+  <path d="M 480 138 L 512 138" stroke="#468231" stroke-width="1.8" class="flow" fill="none"/>
+  <path d="M 716 138 L 748 138" stroke="#468231" stroke-width="1.8" class="flow" fill="none"/>
+  <path d="M 952 138 L 984 138" stroke="#468231" stroke-width="1.8" class="flow" fill="none"/>
+
+  <!-- branch lanes from stage 3 -->
+  <path d="M 614 186 L 614 250 L 200 250 L 200 300" stroke="#3c824f" stroke-width="1.6" class="flow-slow" fill="none"/>
+  <path d="M 614 186 L 614 250 L 906 250 L 906 300" stroke="#468231" stroke-width="1.6" class="flow" fill="none"/>
+  <text x="560" y="222" font-size="13" fill="#3c824f">允许路径</text>
+  <text x="762" y="222" font-size="13" fill="#468231">被拒读取</text>
+
+  <rect x="98" y="300" width="204" height="88" rx="12" fill="#f6fdf3" stroke="#3c824f" stroke-width="1.4"/>
+  <text x="200" y="336" text-anchor="middle" font-size="16" fill="#182a1c">读写透传</text>
+  <text x="200" y="362" text-anchor="middle" class="mono" font-size="12" fill="#5d7a6b">policy.Allow → passthrough</text>
+
+  <rect x="804" y="300" width="204" height="88" rx="12" fill="#f6fdf3" stroke="#468231" stroke-width="1.6"/>
+  <text x="906" y="330" text-anchor="middle" font-size="16" fill="#182a1c">终端内联审批</text>
+  <text x="906" y="356" text-anchor="middle" class="mono" font-size="13" fill="#468231">y/N · TTL 30m · 只读</text>
+  <text x="906" y="378" text-anchor="middle" font-size="12.5" fill="#5d7a6b">审批人写入授权记录</text>
+
+  <!-- grant loop back to the view -->
+  <path d="M 804 322 C 700 322 620 290 560 240" stroke="#468231" stroke-width="1.6" class="flow" fill="none"/>
+  <text x="596" y="308" font-size="13" fill="#468231">granted → 重试成功</text>
+
+  <rect x="1084" y="300" width="76" height="88" rx="12" fill="#f9fef7" stroke="#d7f7cb" stroke-width="1.4"/>
+  <text x="1122" y="330" text-anchor="middle" font-size="14" fill="#468231">EACCES</text>
+  <text x="1122" y="352" text-anchor="middle" font-size="12.5" fill="#5d7a6b">拒绝</text>
+
+  <!-- TTL expiry note -->
+  <path d="M 906 388 L 906 430" stroke="#d7f7cb" stroke-width="1.2" class="blink" fill="none"/>
+  <rect x="804" y="430" width="204" height="52" rx="10" fill="#fafef9" stroke="#d7f7cb" stroke-width="1.2"/>
+  <text x="906" y="452" text-anchor="middle" font-size="13" fill="#5d7a6b">TTL 到期自动收回</text>
+  <text x="906" y="472" text-anchor="middle" font-size="13" fill="#5d7a6b">写敏感路径永不放行</text>
+
+  <!-- timeline footer -->
+  <line x1="40" y1="546" x2="1160" y2="546" stroke="#d7f7cb" stroke-width="1.2"/>
+  <g font-size="14" fill="#182a1c" class="mono">
+    <circle cx="200" cy="546" r="4" fill="#468231" class="pulse"/>
+    <circle cx="638" cy="546" r="4" fill="#468231" class="pulse2"/>
+    <circle cx="1000" cy="546" r="4" fill="#468231" class="pulse"/>
+    <text x="200" y="578" text-anchor="middle" fill="#5d7a6b">decisions.jsonl 实时追加</text>
+    <text x="638" y="578" text-anchor="middle" fill="#5d7a6b">grants.jsonl 审批留痕</text>
+    <text x="1000" y="578" text-anchor="middle" fill="#5d7a6b">exposure-manifest-*.json</text>
+  </g>
+
+</svg>

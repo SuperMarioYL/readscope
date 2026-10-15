@@ -1,0 +1,51 @@
+{
+  "schema": "readscope.exposure-manifest/v0",
+  "run_id": "20261014-235739-63de5f",
+  "agent_cmd": [
+    "readscope",
+    "mockagent"
+  ],
+  "model_target": "deepseek-v4.1-flash",
+  "policy_digest": "sha256:2c261f538cc3cdbcbc6386097290d349582f587c75a1bda77dac00d39452302b",
+  "env_var_names": [
+    "HOME",
+    "HOSTNAME",
+    "PATH",
+    "PWD",
+    "READSCOPE_MODEL_TARGET",
+    "READSCOPE_RUN_ID",
+    "READSCOPE_SRC",
+    "READSCOPE_WORKSPACE",
+    "SHLVL",
+    "TERM"
+  ],
+  "reads": [
+    {
+      "path": "src/main.go",
+      "verdict": "allowed",
+      "at": "2026-10-14T23:57:39.556890836Z"
+    },
+    {
+      "path": ".env",
+      "verdict": "granted",
+      "at": "2026-10-14T23:57:40.823905712Z"
+    },
+    {
+      "path": ".ssh/id_ed25519",
+      "verdict": "denied",
+      "at": "2026-10-14T23:57:42.079992546Z"
+    }
+  ],
+  "grants": [
+    {
+      "path": ".env",
+      "ttl": "30m0s",
+      "granted_at": "2026-10-14T23:57:40.823813587Z",
+      "expires_at": "2026-10-15T00:27:40.823813587Z",
+      "approver": "terminal",
+      "reason": "approved in terminal"
+    }
+  ],
+  "started_at": "2026-10-14T23:57:39.550138044Z",
+  "ended_at": "2026-10-14T23:57:42.090712296Z"
+}

@@ -86,12 +86,21 @@ func (b *Broker) RequestGrant(rel string) bool {
 	fmt.Fprintf(b.cfg.Out, "\n[readscope] Agent 请求读取被拒路径: %s\n", rel)
 	fmt.Fprintf(b.cfg.Out, "[readscope] 批准本次运行内只读访问（TTL %s）?(y/N) ", formatTTL(b.cfg.TTL))
 
-	line, err := b.reader.ReadString('\n')
-	if err != nil {
-		fmt.Fprintln(b.cfg.Out, "\n[readscope] 未收到答复，拒绝")
-		return false
+	// Read one answer byte-wise: a raw-mode pty (docker -it) delivers
+	// Enter as \r, while a pipe or cooked tty delivers \n.
+	var line []byte
+	for {
+		c, err := b.reader.ReadByte()
+		if err != nil {
+			fmt.Fprintln(b.cfg.Out, "\n[readscope] 未收到答复，拒绝")
+			return false
+		}
+		if c == '\n' || c == '\r' {
+			break
+		}
+		line = append(line, c)
 	}
-	answer := strings.ToLower(strings.TrimSpace(line))
+	answer := strings.ToLower(strings.TrimSpace(string(line)))
 	if answer != "y" && answer != "yes" {
 		fmt.Fprintf(b.cfg.Out, "[readscope] 已拒绝 %s\n", rel)
 		return false

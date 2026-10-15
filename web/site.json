@@ -2,7 +2,10 @@
   "schema": 3,
   "name": "ReadScope",
   "github": "https://github.com/SuperMarioYL/readscope",
-  "lang": { "primary": "zh", "toggle": true },
+  "lang": {
+    "primary": "zh",
+    "toggle": true
+  },
   "palette": "auto",
   "scene": {
     "kind": "neon-graph",
@@ -31,71 +34,190 @@
   },
   "advantages": [
     {
-      "title": { "zh": "默认拒绝，而不是默认全给", "en": "Default deny, not default everything" },
+      "title": {
+        "zh": "默认拒绝，而不是默认全给",
+        "en": "Default deny, not default everything"
+      },
       "body": {
         "zh": "策略允许的源码路径正常读写；.env、*.pem、.ssh/ 等敏感路径在容器内的视图里直接 EACCES，被拒条目甚至不会出现在目录列表中。",
         "en": "Policy-allowed sources read and write normally; sensitive paths like .env, *.pem and .ssh/ get EACCES inside the container view - denied entries do not even appear in listings."
       },
-      "chips": ["› FUSE 门面，容器内生效", "› 文件级 default-deny"]
+      "chips": [
+        "› FUSE 门面，容器内生效",
+        "› 文件级 default-deny"
+      ]
     },
     {
-      "title": { "zh": "越权读取，即时审批", "en": "Out-of-scope reads, approved in the moment" },
+      "title": {
+        "zh": "越权读取，即时审批",
+        "en": "Out-of-scope reads, approved in the moment"
+      },
       "body": {
         "zh": "被拒读取在终端内联弹出 y/N：批准后该路径本次运行只读放行，TTL 到期自动收回；拒绝就当场拒绝，没有后台等待。",
         "en": "A denied read pops an inline y/N in the terminal: approval opens the path read-only for this run with an automatic TTL expiry; refusal is immediate."
       },
-      "chips": ["› 授权只覆盖 read", "› TTL 到期自动收回"]
+      "chips": [
+        "› 授权只覆盖 read",
+        "› TTL 到期自动收回"
+      ]
     },
     {
-      "title": { "zh": "每次运行，一份暴露清单", "en": "One exposure manifest per run" },
+      "title": {
+        "zh": "每次运行，一份暴露清单",
+        "en": "One exposure manifest per run"
+      },
       "body": {
         "zh": "运行结束自动落盘 exposure-manifest JSON：每个路径的读取判定、全部限时授权、注入的环境变量名字与策略摘要，且可由判定日志重放复核。",
         "en": "At run end an exposure-manifest JSON lands on disk: per-path read verdicts, all inline grants, injected env var names and the policy digest - replay-verifiable from the decision log."
       },
-      "chips": ["› 机器可查的合规留痕", "› readscope inspect 一屏摘要"]
+      "chips": [
+        "› 机器可查的合规留痕",
+        "› readscope inspect 一屏摘要"
+      ]
     }
   ],
   "demo": {
-    "title": { "zh": "60 秒看懂一次运行", "en": "One run in 60 seconds" },
+    "title": {
+      "zh": "60 秒看懂一次运行",
+      "en": "One run in 60 seconds"
+    },
     "note": {
       "zh": "真实录制：容器内挂载默认拒绝视图，内置 mock agent 尝试读 .env 被拒、申请授权、被拒 .ssh 后结束，暴露清单落盘。",
       "en": "Real recording: the default-deny view is mounted in a container, the built-in mock agent gets denied on .env, asks for the grant, gets refused on .ssh, and the manifest lands."
     },
     "source": "/assets/demo-exposure-manifest.gif",
-    "steps": []
+    "steps": [
+      {
+        "label": {
+          "zh": "在容器内挂载默认拒绝视图并运行 agent",
+          "en": "Mount the default-deny view in a container and run the agent"
+        },
+        "body": {
+          "zh": "被拒条目（.env、.ssh/）不出现在目录列表中；源码路径正常读写。",
+          "en": "Denied entries (.env, .ssh/) never appear in listings; source paths read and write normally."
+        },
+        "image": "/assets/demo-exposure-manifest.gif",
+        "command": "./examples/run-demo-docker.sh",
+        "output": "[readscope] 运行 20261014-235739-63de5f\n[readscope] 视图       /tmp/readscope-mnt-20261014-235739-63de5f（源: /src）\n[readscope] 策略       /policies/default.yaml（sha256:2c261f53…）\n[agent] 浏览工作区: README.md  src\n[agent] 读取 src/main.go（93 字节）— 策略允许，透传",
+        "imageDark": "/assets/demo-exposure-manifest.gif"
+      },
+      {
+        "label": {
+          "zh": "agent 请求 .env：内联授权，批准（y）",
+          "en": "The agent asks for .env: inline grant, approved (y)"
+        },
+        "body": {
+          "zh": "授权只覆盖 read；同一会话立即重试成功，TTL 到期自动收回。",
+          "en": "The grant covers read only; the retry succeeds in the same session and the TTL expires on its own."
+        },
+        "image": "/assets/demo-exposure-manifest.gif",
+        "command": "y",
+        "output": "[readscope] Agent 请求读取被拒路径: .env\n[readscope] 批准本次运行内只读访问（TTL 30m0s）?(y/N) y\n[readscope] 已授权 .env（只读，TTL 30m0s，审批人 terminal）\n[agent] .env → 可读（250 字节），已授权放行，内容进入模型上下文",
+        "imageDark": "/assets/demo-exposure-manifest.gif"
+      },
+      {
+        "label": {
+          "zh": "agent 请求 .ssh/id_ed25519：拒绝（n）",
+          "en": "The agent asks for .ssh/id_ed25519: refused (n)"
+        },
+        "body": {
+          "zh": "写敏感路径永不放行；对照组直读原始路径 /src/.env 仍可读，证明拒绝发生在门面层。",
+          "en": "Writes to sensitive paths are never granted; the control read of the raw /src/.env still works, proving the denial lives in the facade."
+        },
+        "image": "/assets/demo-exposure-manifest.gif",
+        "command": "n",
+        "output": "[readscope] Agent 请求读取被拒路径: .ssh/id_ed25519\n[readscope] 批准本次运行内只读访问（TTL 30m0s）?(y/N) n\n[readscope] 已拒绝 .ssh/id_ed25519\n[agent] .ssh/id_ed25519 → 被门面拒绝（EACCES）",
+        "imageDark": "/assets/demo-exposure-manifest.gif"
+      },
+      {
+        "label": {
+          "zh": "运行结束，暴露清单自动落盘",
+          "en": "The run ends, the exposure manifest lands"
+        },
+        "body": {
+          "zh": "样例清单见 docs/exposure-manifest.sample.json；产物含 decisions.jsonl / grants.jsonl。",
+          "en": "See docs/exposure-manifest.sample.json; artifacts include decisions.jsonl / grants.jsonl."
+        },
+        "image": "/assets/demo-exposure-manifest.gif",
+        "command": "（运行结束自动产出）",
+        "output": "── 暴露清单摘要 ──────────────────────────────\n运行 ID      20261014-235739-63de5f\nAgent 命令   readscope mockagent\n模型目标     deepseek-v4.1-flash\n清单文件     /tmp/readscope-demo-out/20261014-235739-63de5f/exposure-manifest-20261014-235739-63de5f.json\n读取判定     共 3 个路径：允许 1 · 授权 1 · 拒绝 1\n  允许读取   src/main.go\n  授权读取   .env\n  拒绝读取   .ssh/id_ed25519\n限时授权     1 条\n  .env  TTL 30m0s  审批人 terminal  授予 23:57:40\n环境变量     10 个名字（仅记录名字，不记录值）\n重放校验     判定日志重放与清单一致\n[readscope] 运行结束，退出码 0",
+        "imageDark": "/assets/demo-exposure-manifest.gif"
+      },
+      {
+        "label": {
+          "zh": "宿主机复核清单摘要",
+          "en": "Re-verify the summary on the host"
+        },
+        "body": {
+          "zh": "inspect 也接受单个清单文件；摘要为中文，环境变量仅记录名字。",
+          "en": "inspect also takes a single manifest file; the summary is zh and env vars are recorded by name only."
+        },
+        "image": "/assets/demo-exposure-manifest.gif",
+        "command": "go run ./cmd/readscope inspect /tmp/readscope-demo-out",
+        "output": "── 暴露清单摘要 ──────────────────────────────\n运行 ID      20261014-235739-63de5f\n读取判定     共 3 个路径：允许 1 · 授权 1 · 拒绝 1\n限时授权     1 条\n重放校验     判定日志重放与清单一致",
+        "imageDark": "/assets/demo-exposure-manifest.gif"
+      }
+    ]
   },
   "quickstart": {
-    "title": { "zh": "三步上手", "en": "Three steps" },
+    "title": {
+      "zh": "三步上手",
+      "en": "Three steps"
+    },
     "body": {
       "zh": "单二进制、零服务、零数据库。宿主机只需要 Docker。",
       "en": "One binary, zero services, zero databases. The host only needs Docker."
     },
     "steps": [
       {
-        "title": { "zh": "安装单二进制", "en": "Install the single binary" },
+        "title": {
+          "zh": "安装单二进制",
+          "en": "Install the single binary"
+        },
         "code": "curl -fsSL <release-url> | tar xz && sudo mv readscope /usr/local/bin/"
       },
       {
-        "title": { "zh": "确认默认策略", "en": "Review the default policy" },
+        "title": {
+          "zh": "确认默认策略",
+          "en": "Review the default policy"
+        },
         "code": "cp policies/default.yaml readscope.yaml  # 按需调整 allowlist"
       },
       {
-        "title": { "zh": "在容器内运行 agent", "en": "Run the agent in a container" },
+        "title": {
+          "zh": "在容器内运行 agent",
+          "en": "Run the agent in a container"
+        },
         "code": "readscope run -- readscope mockagent"
       }
     ]
   },
   "limitations": [
-    { "zh": "v0.1 面向 Linux 容器（需要 /dev/fuse 与 fusermount）；macOS/Windows 用户通过 Docker 运行。", "en": "v0.1 targets Linux containers (/dev/fuse and fusermount); macOS and Windows users run it through Docker." },
-    { "zh": "门面是工作区视图的执行层，不是沙箱边界：能直接触达原始路径的特权进程在门面之外，README 有完整边界声明。", "en": "The facade enforces the workspace view, it is not a sandbox boundary: a privileged process that reaches the backing path directly is outside its reach - see the README boundary notes." },
-    { "zh": "清单记录环境变量的名字，不隐藏其值；值级隐藏与凭据代理在 v0.1 范围之外。", "en": "The manifest records env variable names, it does not hide values; value masking and credential proxying are out of scope for v0.1." }
+    {
+      "zh": "v0.1 面向 Linux 容器（需要 /dev/fuse 与 fusermount）；macOS/Windows 用户通过 Docker 运行。",
+      "en": "v0.1 targets Linux containers (/dev/fuse and fusermount); macOS and Windows users run it through Docker."
+    },
+    {
+      "zh": "门面是工作区视图的执行层，不是沙箱边界：能直接触达原始路径的特权进程在门面之外，README 有完整边界声明。",
+      "en": "The facade enforces the workspace view, it is not a sandbox boundary: a privileged process that reaches the backing path directly is outside its reach - see the README boundary notes."
+    },
+    {
+      "zh": "清单记录环境变量的名字，不隐藏其值；值级隐藏与凭据代理在 v0.1 范围之外。",
+      "en": "The manifest records env variable names, it does not hide values; value masking and credential proxying are out of scope for v0.1."
+    }
   ],
   "cta": {
-    "button": { "zh": "在 GitHub 上开始", "en": "Get started on GitHub" }
+    "button": {
+      "zh": "在 GitHub 上开始",
+      "en": "Get started on GitHub"
+    }
   },
   "story": {
     "intro": {
-      "title": { "zh": "为什么需要一层面", "en": "Why a facade" },
+      "title": {
+        "zh": "为什么需要一层面",
+        "en": "Why a facade"
+      },
       "body": {
         "zh": "把整个仓库交给一次 agent 运行，意味着 .env、私钥和客户数据同时交了出去。网络出口管控不等于读取管控——ReadScope 在工作区这一层补上缺失的原语。",
         "en": "Handing a whole repository to an agent run hands over .env, private keys and customer data with it. Egress controls are not read controls - ReadScope adds the missing primitive at the workspace layer."
@@ -103,7 +225,10 @@
     },
     "sections": [
       {
-        "title": { "zh": "第一层：策略", "en": "Layer one: policy" },
+        "title": {
+          "zh": "第一层：策略",
+          "en": "Layer one: policy"
+        },
         "body": {
           "zh": "一份 YAML：默认拒绝，按 glob 放行读写。敏感路径被显式拦下，源码路径正常透传，规则即审计口径。",
           "en": "One YAML: default deny with glob allow rules. Sensitive paths are explicitly refused, sources pass through, and the rules are the audit basis."
@@ -118,7 +243,10 @@
         }
       },
       {
-        "title": { "zh": "第二层：审批", "en": "Layer two: approval" },
+        "title": {
+          "zh": "第二层：审批",
+          "en": "Layer two: approval"
+        },
         "body": {
           "zh": "agent 撞上被拒路径时，终端内联询问 y/N；批准的授权只覆盖 read，带 TTL 自动收回，全程记录审批人。",
           "en": "When the agent hits a denied path, the terminal asks y/N inline; an approval covers read only, carries a TTL that expires by itself, and records the approver."
@@ -133,7 +261,10 @@
         }
       },
       {
-        "title": { "zh": "第三层：留痕", "en": "Layer three: the record" },
+        "title": {
+          "zh": "第三层：留痕",
+          "en": "Layer three: the record"
+        },
         "body": {
           "zh": "每次判定实时追加进 decisions.jsonl；运行结束由日志重放出清单——同一份日志永远重放出同一份清单，审计无需信任运行时记忆。",
           "en": "Every decision appends to decisions.jsonl in real time; the manifest is derived by replaying that log - the same log always replays into the same manifest."
@@ -150,7 +281,10 @@
     ],
     "details": [
       {
-        "title": { "zh": "为什么用 FUSE，而不是改造 agent", "en": "Why FUSE, not agent hooks" },
+        "title": {
+          "zh": "为什么用 FUSE，而不是改造 agent",
+          "en": "Why FUSE, not agent hooks"
+        },
         "body": {
           "zh": "门面在文件系统层拦截，任何命令零配合生效：cat、grep、find、任意 agent——不需要 agent 集成任何 SDK。代价也如实声明：容器内 root 能绕过视图，门面抬高下限并留下证据，不是沙箱边界。",
           "en": "The facade intercepts at the filesystem layer, so any command complies with zero cooperation: cat, grep, find, any agent - no SDK integration. The cost is stated honestly: root inside the container can bypass the view; the facade raises the floor and leaves evidence, it is not a sandbox boundary."
@@ -158,7 +292,10 @@
         "code": "readscope run --src /src -- readscope mockagent"
       },
       {
-        "title": { "zh": "清单可以被重放校验", "en": "The manifest replay-verifies" },
+        "title": {
+          "zh": "清单可以被重放校验",
+          "en": "The manifest replay-verifies"
+        },
         "body": {
           "zh": "判定实时追加，结束时由日志重放生成清单；readscope inspect 会当场复核一次。改过清单，重放立刻对不上。",
           "en": "Decisions append in real time and the manifest is derived by replay at the end; readscope inspect re-verifies on the spot. Edit the manifest and the replay stops matching."

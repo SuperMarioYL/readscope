@@ -7,7 +7,9 @@
 set -eu
 
 REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-OUT_DIR="${TMPDIR:-/tmp}/readscope-demo-out"
+# Stable path so the host-side `readscope inspect /tmp/readscope-demo-out`
+# in the demo tape and README resolves to the same directory.
+OUT_DIR=/tmp/readscope-demo-out
 rm -rf "$OUT_DIR"
 mkdir -p "$OUT_DIR"
 
@@ -20,7 +22,7 @@ echo "==> 准备一次性演示工作区（可写副本，不污染仓库）"
 cp -R "$REPO_ROOT/examples/demo-workspace" "$OUT_DIR/workspace"
 
 echo "==> 容器内运行：挂载默认拒绝视图，运行 mock agent"
-echo "    （agent 请求 .env 时，终端弹出 y/N 内联授权提示；演示时输入 y 放行 .env）"
+echo "    （agent 请求 .env 时，终端会弹出内联授权提示；演示时输入 y 放行 .env）"
 docker run --rm -it \
   --cap-add SYS_ADMIN --device /dev/fuse \
   -e READSCOPE_SRC=/src \

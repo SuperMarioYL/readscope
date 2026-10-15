@@ -1,0 +1,56 @@
+{
+  "tool": "readscope",
+  "version": "0.1.0 (built from this tree with go1.24.1)",
+  "date": "2026-10-15",
+  "recording": "docs/assets/demo-exposure-manifest.gif (vhs, docs/demo.tape, unretouched)",
+  "environment": "Docker Desktop 27.4.0 on macOS arm64; container alpine:3.20 with the fuse package; facade mounted through --cap-add SYS_ADMIN --device /dev/fuse",
+  "input": {
+    "workspace": "examples/demo-workspace (README.md, src/main.go, .env with placeholder secrets, .ssh/id_ed25519 placeholder)",
+    "policy": "policies/default.yaml (sha256:2c261f538cc3cdbcbc6386097290d349582f587c75a1bda77dac00d39452302b)",
+    "agent": "readscope mockagent - the built-in mock agent that simulates one Coding Agent run (explore, read source, try .env, try .ssh/id_ed25519, write a source file)"
+  },
+  "steps": [
+    {
+      "label": "在容器内挂载默认拒绝视图并运行 agent",
+      "command": "./examples/run-demo-docker.sh",
+      "output": "[readscope] 运行 20261014-235739-63de5f\n[readscope] 视图       /tmp/readscope-mnt-20261014-235739-63de5f（源: /src）\n[readscope] 策略       /policies/default.yaml（sha256:2c261f53…）\n[agent] 浏览工作区: README.md  src\n[agent] 读取 src/main.go（93 字节）— 策略允许，透传",
+      "note": "被拒条目（.env、.ssh/）不出现在目录列表中；源码路径正常读写"
+    },
+    {
+      "label": "agent 请求 .env：内联授权，批准（y）",
+      "command": "y",
+      "output": "[readscope] Agent 请求读取被拒路径: .env\n[readscope] 批准本次运行内只读访问（TTL 30m0s）?(y/N) y\n[readscope] 已授权 .env（只读，TTL 30m0s，审批人 terminal）\n[agent] .env → 可读（250 字节），已授权放行，内容进入模型上下文",
+      "note": "授权只覆盖 read；同一会话立即重试成功，TTL 到期自动收回"
+    },
+    {
+      "label": "agent 请求 .ssh/id_ed25519：拒绝（n）",
+      "command": "n",
+      "output": "[readscope] Agent 请求读取被拒路径: .ssh/id_ed25519\n[readscope] 批准本次运行内只读访问（TTL 30m0s）?(y/N) n\n[readscope] 已拒绝 .ssh/id_ed25519\n[agent] .ssh/id_ed25519 → 被门面拒绝（EACCES）",
+      "note": "写敏感路径永不放行；对照组直读原始路径 /src/.env 仍可读，证明拒绝发生在门面层"
+    },
+    {
+      "label": "运行结束，暴露清单自动落盘",
+      "command": "（运行结束自动产出）",
+      "output": "── 暴露清单摘要 ──────────────────────────────\n运行 ID      20261014-235739-63de5f\nAgent 命令   readscope mockagent\n模型目标     deepseek-v4.1-flash\n清单文件     /tmp/readscope-demo-out/20261014-235739-63de5f/exposure-manifest-20261014-235739-63de5f.json\n读取判定     共 3 个路径：允许 1 · 授权 1 · 拒绝 1\n  允许读取   src/main.go\n  授权读取   .env\n  拒绝读取   .ssh/id_ed25519\n限时授权     1 条\n  .env  TTL 30m0s  审批人 terminal  授予 23:57:40\n环境变量     10 个名字（仅记录名字，不记录值）\n重放校验     判定日志重放与清单一致\n[readscope] 运行结束，退出码 0",
+      "note": "样例清单见 docs/exposure-manifest.sample.json；产物含 decisions.jsonl / grants.jsonl"
+    },
+    {
+      "label": "宿主机复核清单摘要",
+      "command": "go run ./cmd/readscope inspect /tmp/readscope-demo-out",
+      "output": "── 暴露清单摘要 ──────────────────────────────\n运行 ID      20261014-235739-63de5f\n读取判定     共 3 个路径：允许 1 · 授权 1 · 拒绝 1\n限时授权     1 条\n重放校验     判定日志重放与清单一致",
+      "note": "inspect 也接受单个清单文件；摘要为中文，环境变量仅记录名字"
+    }
+  ],
+  "artifacts": {
+    "manifest_schema": "schemas/exposure-manifest.v0.json",
+    "sample_manifest": "docs/exposure-manifest.sample.json",
+    "per_run": "decisions.jsonl (判定日志，实时追加) · grants.jsonl (授权留痕) · exposure-manifest-<run_id>.json"
+  },
+  "limitations": [
+    "v0.1 面向 Linux 容器（需要 /dev/fuse 与 fusermount）；macOS/Windows 上通过 Docker 运行。",
+    "门面是工作区视图的执行层，不是沙箱边界：容器内特权进程可直读原始路径（录制中作为对照组展示）。",
+    "清单仅记录环境变量名字，不隐藏值；env 值隐藏与凭据代理在 v0.1 范围之外。",
+    "readscope init 与 readscope run --docker 为 m3 里程碑的规划项，当前版本返回说明性错误。",
+    "GIF 录制时构建与镜像缓存已预热，端到端约 16 秒；冷缓存首次运行需额外下载 alpine 与 fuse 包。"
+  ]
+}

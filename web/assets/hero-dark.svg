@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-label="ReadScope hero" data-palette="7de656-6ae78b-dbf6ac-447cdb53bf04">
+  <style>
+    text { font-family: -apple-system,'Segoe UI','PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif; }
+    .mono { font-family: 'SF Mono','JetBrains Mono','Cascadia Code',ui-monospace,Menlo,Consolas,monospace; }
+    .drift1 { animation: drift1 7s ease-in-out infinite alternate; }
+    .drift2 { animation: drift2 7s ease-in-out infinite alternate; }
+    .pulse  { animation: pulse 2.6s ease-in-out infinite; }
+    .pulse2 { animation: pulse2 2.6s ease-in-out infinite; }
+    .flow   { stroke-dasharray: 6 8; animation: march 1.6s linear infinite; }
+    .flow-slow { stroke-dasharray: 5 9; animation: march 3.2s linear infinite; }
+    .blink  { animation: blink 2.4s steps(2, jump-none) infinite; }
+    @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(14px,-18px); } }
+    @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-12px,16px); } }
+    @keyframes pulse  { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+    @keyframes pulse2 { 0%,100% { opacity: .9; } 45% { opacity: .25; } }
+    @keyframes march  { to { stroke-dashoffset: -28; } }
+    @keyframes blink  { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    @media (prefers-reduced-motion: reduce) {
+      .drift1,.drift2,.pulse,.pulse2,.flow,.flow-slow,.blink { animation: none; }
+    }</style>
+  <rect width="1200" height="640" fill="#060c0d"/>
+  <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <radialGradient id="halo" cx="50%" cy="42%" r="55%">
+    <stop offset="0%" stop-color="#7de656" stop-opacity="0.16"/>
+    <stop offset="60%" stop-color="#6ae78b" stop-opacity="0.05"/>
+    <stop offset="100%" stop-color="#060c0d" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="1200" height="640" fill="url(#halo)"/>
+  <g><line x1="60" y1="0" x2="60" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="180" y1="0" x2="180" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="300" y1="0" x2="300" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="420" y1="0" x2="420" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="540" y1="0" x2="540" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="660" y1="0" x2="660" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="780" y1="0" x2="780" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="900" y1="0" x2="900" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="1020" y1="0" x2="1020" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="1140" y1="0" x2="1140" y2="640" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="60" x2="1200" y2="60" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="180" x2="1200" y2="180" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="300" x2="1200" y2="300" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="420" x2="1200" y2="420" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/>
+<line x1="0" y1="540" x2="1200" y2="540" stroke="#203c1d" stroke-width="0.5" opacity="0.5"/><g class="drift1"><circle cx="903" cy="590" r="1" fill="#7de656" opacity="0.1"/><circle cx="1070" cy="449" r="1.7" fill="#7de656" opacity="0.15000000000000002"/><circle cx="281" cy="578" r="2.4" fill="#7de656" opacity="0.2"/><circle cx="504" cy="117" r="1" fill="#7de656" opacity="0.25"/><circle cx="263" cy="486" r="1.7" fill="#7de656" opacity="0.1"/><circle cx="370" cy="465" r="2.4" fill="#7de656" opacity="0.15000000000000002"/><circle cx="1101" cy="194" r="1" fill="#7de656" opacity="0.2"/><circle cx="184" cy="33" r="1.7" fill="#7de656" opacity="0.25"/><circle cx="503" cy="22" r="2.4" fill="#7de656" opacity="0.1"/><circle cx="190" cy="441" r="1" fill="#7de656" opacity="0.15000000000000002"/><circle cx="941" cy="150" r="1.7" fill="#7de656" opacity="0.2"/><circle cx="304" cy="469" r="2.4" fill="#7de656" opacity="0.25"/><circle cx="1003" cy="98" r="1" fill="#7de656" opacity="0.1"/></g><g class="drift2"><circle cx="110" cy="477" r="1.7" fill="#7de656" opacity="0.15000000000000002"/><circle cx="1001" cy="526" r="2.4" fill="#7de656" opacity="0.2"/><circle cx="1144" cy="125" r="1" fill="#7de656" opacity="0.25"/><circle cx="963" cy="294" r="1.7" fill="#7de656" opacity="0.1"/><circle cx="730" cy="113" r="2.4" fill="#7de656" opacity="0.15000000000000002"/><circle cx="241" cy="582" r="1" fill="#7de656" opacity="0.2"/><circle cx="1124" cy="21" r="1.7" fill="#7de656" opacity="0.25"/><circle cx="683" cy="310" r="2.4" fill="#7de656" opacity="0.1"/><circle cx="350" cy="349" r="1" fill="#7de656" opacity="0.15000000000000002"/><circle cx="821" cy="498" r="1.7" fill="#7de656" opacity="0.2"/><circle cx="984" cy="177" r="2.4" fill="#7de656" opacity="0.25"/><circle cx="1083" cy="286" r="1" fill="#7de656" opacity="0.1"/><circle cx="50" cy="305" r="1.7" fill="#7de656" opacity="0.15000000000000002"/></g></g>
+  <g><line x1="814.0" y1="268.0" x2="684.0" y2="268.0" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="792.8" y1="344.4" x2="675.7" y2="296.6" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="733.4" y1="405.6" x2="652.4" y2="319.6" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="647.6" y1="439.6" x2="618.7" y2="332.3" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="552.4" y1="439.6" x2="581.3" y2="332.3" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="466.6" y1="405.6" x2="547.6" y2="319.6" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="407.2" y1="344.4" x2="524.3" y2="296.6" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="386.0" y1="268.0" x2="516.0" y2="268.0" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="407.2" y1="191.6" x2="524.3" y2="239.4" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="466.6" y1="130.4" x2="547.6" y2="216.4" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="552.4" y1="96.4" x2="581.3" y2="203.7" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="647.6" y1="96.4" x2="618.7" y2="203.7" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="733.4" y1="130.4" x2="652.4" y2="216.4" stroke="#203c1d" stroke-width="1" opacity="0.8"/><line x1="792.8" y1="191.6" x2="675.7" y2="239.4" stroke="#203c1d" stroke-width="1" opacity="0.8"/></g>
+  <g><circle cx="850.0" cy="268.0" r="2.2" fill="#dbf6ac" opacity="0.5" class="pulse2"/><circle cx="845.1" cy="364.8" r="3.2" fill="#7de656" opacity="0.5" class="pulse"/><circle cx="783.3" cy="456.5" r="4.2" fill="#dbf6ac" opacity="0.5" class="pulse2"/><circle cx="670.3" cy="520.6" r="2.2" fill="#7de656" opacity="0.5" class="pulse"/><circle cx="544.4" cy="467.9" r="3.2" fill="#dbf6ac" opacity="0.5" class="pulse2"/><circle cx="430.4" cy="442.4" r="4.2" fill="#7de656" opacity="0.5" class="pulse"/><circle cx="335.1" cy="372.6" r="2.2" fill="#dbf6ac" opacity="0.5" class="pulse2"/><circle cx="284.0" cy="268.0" r="3.2" fill="#7de656" opacity="0.5" class="pulse"/><circle cx="374.8" cy="179.1" r="4.2" fill="#dbf6ac" opacity="0.5" class="pulse2"/><circle cx="430.4" cy="93.6" r="2.2" fill="#7de656" opacity="0.5" class="pulse"/><circle cx="534.6" cy="33.0" r="3.2" fill="#dbf6ac" opacity="0.5" class="pulse2"/><circle cx="670.3" cy="15.4" r="4.2" fill="#7de656" opacity="0.5" class="pulse"/><circle cx="755.9" cy="107.7" r="2.2" fill="#dbf6ac" opacity="0.5" class="pulse2"/><circle cx="845.1" cy="171.2" r="3.2" fill="#7de656" opacity="0.5" class="pulse"/></g>
+
+  <!-- workspace shield: the default-deny projection -->
+  <g filter="url(#glow)">
+    <path d="M 600 150 L 728 202 L 728 320 Q 728 364 600 390 Q 472 364 472 320 L 472 202 Z"
+      fill="#0e1717" stroke="#7de656" stroke-width="2.5"/>
+  </g>
+  <text x="600" y="190" text-anchor="middle" font-size="15" letter-spacing="4" fill="#9db9a8">/workspace · 默认拒绝视图</text>
+
+  <!-- file rows: pass / deny / pass -->
+  <g class="mono" font-size="17">
+    <rect x="508" y="214" width="184" height="34" rx="6" fill="#0c1713" stroke="#6ae78b" stroke-width="1"/>
+    <circle cx="526" cy="231" r="4" fill="#7de656"/>
+    <text x="540" y="237" fill="#f8fdee">src/main.go</text>
+    <text x="666" y="237" text-anchor="end" font-size="13" fill="#7de656">pass</text>
+
+    <rect x="508" y="258" width="184" height="34" rx="6" fill="#0c1713" stroke="#7de656" stroke-width="1" class="blink"/>
+    <circle cx="526" cy="275" r="4" fill="#7de656"/>
+    <text x="540" y="281" fill="#f8fdee">.env</text>
+    <line x1="538" y1="276" x2="578" y2="276" stroke="#7de656" stroke-width="2"/>
+    <text x="666" y="281" text-anchor="end" font-size="13" fill="#7de656">EACCES</text>
+
+    <rect x="508" y="302" width="184" height="34" rx="6" fill="#0c1713" stroke="#6ae78b" stroke-width="1"/>
+    <circle cx="526" cy="319" r="4" fill="#7de656"/>
+    <text x="540" y="325" fill="#f8fdee">.ssh/</text>
+    <text x="666" y="325" text-anchor="end" font-size="13" fill="#7de656">EACCES</text>
+  </g>
+
+  <!-- inline grant card -->
+  <g class="mono">
+    <rect x="772" y="312" width="252" height="64" rx="10" fill="#0e1717" stroke="#7de656" stroke-width="1.5"/>
+    <text x="790" y="338" font-size="14" fill="#9db9a8">[readscope] y/N · TTL 30m</text>
+    <text x="790" y="360" font-size="15" fill="#7de656">granted: .env (read-only)</text>
+  </g>
+  <path d="M 730 338 C 752 338 752 344 772 344" stroke="#7de656" stroke-width="1.5" fill="none" class="flow"/>
+
+  <!-- manifest card -->
+  <g class="mono">
+    <rect x="176" y="312" width="252" height="64" rx="10" fill="#0e1717" stroke="#6ae78b" stroke-width="1.5"/>
+    <text x="194" y="338" font-size="14" fill="#9db9a8">exposure-manifest.json</text>
+    <text x="194" y="360" font-size="14" fill="#f8fdee">reads · grants · env · replay ✓</text>
+  </g>
+  <path d="M 428 338 C 450 338 428 344 406 344" stroke="#6ae78b" stroke-width="1.5" fill="none" class="flow-slow"/>
+
+  <!-- wordmark -->
+  <text x="600" y="482" text-anchor="middle" font-size="64" font-weight="700" letter-spacing="2" fill="#f8fdee" filter="url(#glow)">Read<tspan fill="#7de656">Scope</tspan></text>
+  <text x="600" y="526" text-anchor="middle" font-size="20" fill="#f8fdee">把仓库交给 Coding Agent 之前，先交给它一个默认拒绝的视图</text>
+  <text x="600" y="556" text-anchor="middle" font-size="16" fill="#9db9a8" class="mono">default-deny workspace view · JIT read grants · per-run exposure manifest</text>
+
+</svg>
