@@ -2,6 +2,7 @@
   "schema": 3,
   "name": "ReadScope",
   "github": "https://github.com/SuperMarioYL/readscope",
+  "host": "readscope.lei6393.com",
   "lang": {
     "primary": "zh",
     "toggle": true
