@@ -34,6 +34,11 @@ syntax.
 
 ### Changed
 
+- **Release binaries actually attach to the release.** `.goreleaser.yaml` listed
+  `windows` as a target, but go-fuse is unix-only, so every release workflow run
+  failed and published a release with zero assets (v0.1.0 included). Windows is no
+  longer a build target, and CI now cross-builds the released targets so a
+  `.goreleaser.yaml` mismatch fails the test job instead of the release.
 - README (zh/en) and the product site describe the new verification behavior and
   the symlink limitation in the security section.
 - The roadmap's hosted policy/approval server moved from "v0.2" to "v0.3"; this

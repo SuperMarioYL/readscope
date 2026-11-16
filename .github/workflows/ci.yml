@@ -19,4 +19,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y fuse
       - run: go build ./...
       - run: go vet ./...
+      - name: Build the release targets (catches a .goreleaser.yaml goos that cannot compile)
+        run: |
+          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64; do
+            GOOS="${target%/*}" GOARCH="${target#*/}" CGO_ENABLED=0 go build -o /dev/null ./cmd/readscope
+          done
       - run: go test ./...

@@ -11,7 +11,6 @@ builds:
     goos:
       - linux
       - darwin
-      - windows
     goarch:
       - amd64
       - arm64
@@ -30,5 +29,6 @@ release:
   draft: false
   footer: >-
     ReadScope runs inside a Linux container (Docker or any runtime with
-    /dev/fuse); the darwin and windows binaries build from the same tree but
-    need a container for the facade — see the README quickstart.
+    /dev/fuse); the darwin binaries build from the same tree but need a
+    container for the facade. Windows is not a build target: go-fuse is
+    unix-only, so Windows users run the Linux binary through Docker.
