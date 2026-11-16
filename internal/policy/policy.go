@@ -67,8 +67,8 @@ type Policy struct {
 	raw []byte
 }
 
-// Load reads and validates a policy file. v0.1 only supports
-// default-deny policies; anything else is rejected at load time.
+// Load reads and validates a policy file. Only default-deny policies
+// are supported; anything else is rejected at load time.
 func Load(path string) (*Policy, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
@@ -226,12 +226,16 @@ func translateGlob(pattern string) (string, error) {
 		switch c {
 		case '*':
 			if i+1 < len(pattern) && pattern[i+1] == '*' {
-				b.WriteString(".*")
 				i += 2
-				// Collapse a following slash so "a/**/b" matches "a/b".
 				if i < len(pattern) && pattern[i] == '/' {
-					b.WriteString("/?")
+					// "**/" spans zero or more directories. The separator
+					// is part of the group: as ".*" + "/?" it would let a
+					// leading "**/" eat into the next segment, so
+					// "**/secret.txt" would also match "mysecret.txt".
+					b.WriteString("(?:.*/)?")
 					i++
+				} else {
+					b.WriteString(".*")
 				}
 			} else {
 				b.WriteString("[^/]*")

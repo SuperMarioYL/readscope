@@ -201,6 +201,43 @@ func (m *Manifest) SetGrants(grants []GrantRecord) {
 	m.Grants = sorted
 }
 
+// ReadGrants loads the run's grants log (grants.jsonl). The store appends one
+// record per approval and replaces a path's grant on re-approval, so the last
+// record per path wins here too; the result is sorted by path to match
+// SetGrants and make replay comparison meaningful.
+func ReadGrants(path string) ([]GrantRecord, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("open grants log: %w", err)
+	}
+	defer f.Close()
+
+	last := map[string]GrantRecord{}
+	sc := bufio.NewScanner(f)
+	sc.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+	for sc.Scan() {
+		line := sc.Bytes()
+		if len(line) == 0 {
+			continue
+		}
+		var g GrantRecord
+		if err := json.Unmarshal(line, &g); err != nil {
+			return nil, fmt.Errorf("grants log %s: corrupt line: %w", path, err)
+		}
+		last[g.Path] = g
+	}
+	if err := sc.Err(); err != nil {
+		return nil, fmt.Errorf("grants log %s: %w", path, err)
+	}
+
+	out := make([]GrantRecord, 0, len(last))
+	for _, g := range last {
+		out = append(out, g)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Path < out[j].Path })
+	return out, nil
+}
+
 // FileName returns the canonical manifest file name for a run.
 func FileName(runID string) string {
 	return "exposure-manifest-" + runID + ".json"

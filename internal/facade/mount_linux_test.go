@@ -93,6 +93,31 @@ func TestMountDefaultDeny(t *testing.T) {
 	}
 }
 
+// A hardlink from a policy-denied file into a writable source path would
+// publish the secret under an allowed name and record an allowed read in the
+// manifest. The kernel resolves the source inode successfully (Lookup only
+// withholds attributes), so the facade's Link must refuse it.
+func TestMountHardlinkCannotLaunderDeniedFile(t *testing.T) {
+	_, _, mnt := mountFacade(t, &recordingBroker{})
+
+	leak := filepath.Join(mnt, "src", "leak.go")
+	if err := os.Link(filepath.Join(mnt, ".env"), leak); !os.IsPermission(err) {
+		t.Fatalf("hardlink from a denied file must be EACCES, got %v", err)
+	}
+	if _, err := os.Lstat(leak); !os.IsNotExist(err) {
+		t.Fatalf("a refused hardlink must not create a destination, got %v", err)
+	}
+
+	// Allowed source -> writable destination stays a normal operation.
+	copyPath := filepath.Join(mnt, "src", "copy.go")
+	if err := os.Link(filepath.Join(mnt, "src", "main.go"), copyPath); err != nil {
+		t.Fatalf("hardlink between allowed paths must succeed: %v", err)
+	}
+	if data, err := os.ReadFile(copyPath); err != nil || string(data) != "package main\n" {
+		t.Fatalf("allowed hardlink content wrong: %q, %v", data, err)
+	}
+}
+
 func TestMountWriteBoundary(t *testing.T) {
 	_, _, mnt := mountFacade(t, &recordingBroker{})
 

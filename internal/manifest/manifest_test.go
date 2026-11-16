@@ -120,6 +120,47 @@ func TestSaveLoadRoundtrip(t *testing.T) {
 	}
 }
 
+// ReadGrants mirrors the store: the last record per path wins and the result
+// is sorted, so replay comparison is deterministic.
+func TestReadGrantsLastWinsAndSorted(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "grants.jsonl")
+	lines := []GrantRecord{
+		{Path: "src/b.txt", TTL: "1m", Approver: "terminal", GrantedAt: at(1), ExpiresAt: at(2)},
+		{Path: ".env", TTL: "30m", Approver: "terminal", GrantedAt: at(3), ExpiresAt: at(33)},
+		{Path: ".env", TTL: "1h", Approver: "security-lead", GrantedAt: at(4), ExpiresAt: at(64)},
+	}
+	var buf bytes.Buffer
+	for _, g := range lines {
+		line, err := json.Marshal(g)
+		if err != nil {
+			t.Fatal(err)
+		}
+		buf.Write(append(line, '\n'))
+	}
+	if err := os.WriteFile(path, buf.Bytes(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := ReadGrants(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 2 || got[0].Path != ".env" || got[1].Path != "src/b.txt" {
+		t.Fatalf("grants must be deduped and sorted: %+v", got)
+	}
+	if got[0].Approver != "security-lead" || got[0].TTL != "1h" {
+		t.Errorf("the last grant for a path must win: %+v", got[0])
+	}
+
+	if err := os.WriteFile(path, []byte("{broken\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := ReadGrants(path); err == nil {
+		t.Fatal("a corrupt grants log must error")
+	}
+}
+
 func TestFindInDirPicksLatest(t *testing.T) {
 	dir := t.TempDir()
 	for _, name := range []string{

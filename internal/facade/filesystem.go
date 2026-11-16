@@ -487,8 +487,28 @@ func (n *node) Symlink(ctx context.Context, target, name string, out *fuse.Entry
 	return n.LoopbackNode.Symlink(ctx, target, name, out)
 }
 
+// linkErrno decides one hardlink. Both ends matter: the destination must be
+// writable, and the source must be readable in its own right. Without the
+// source check a denied file could be relinked to a writable name, which would
+// publish its bytes inside the policy surface and make the exposure manifest
+// record an allowed read for a path that never was readable.
+func (f *Facade) linkErrno(srcRel, dstRel string) syscall.Errno {
+	if dstRel == "\x00escaped" || f.opts.Policy.Decide(dstRel, policy.Write) != policy.Allow {
+		if dstRel != "\x00escaped" {
+			f.log("write", "write", dstRel, manifest.VerdictDenied)
+		}
+		return syscall.EACCES
+	}
+	if !f.visible(srcRel) {
+		f.log("write", "write", srcRel, manifest.VerdictDenied)
+		return syscall.EACCES
+	}
+	return 0
+}
+
 func (n *node) Link(ctx context.Context, target fs.InodeEmbedder, name string, out *fuse.EntryOut) (*fs.Inode, syscall.Errno) {
-	if errno := n.checkWrite(name); errno != 0 {
+	src := target.EmbeddedInode().Path(nil)
+	if errno := n.f.linkErrno(src, n.f.joinRel(n.relPath(), name)); errno != 0 {
 		return nil, errno
 	}
 	return n.LoopbackNode.Link(ctx, target, name, out)

@@ -9,7 +9,7 @@
     "schema": {
       "type": "string",
       "const": "readscope.exposure-manifest/v0",
-      "description": "Format identifier. v0 is the format shipped with ReadScope 0.1.x."
+      "description": "Format identifier. v0 is the format shipped with ReadScope 0.1.x and 0.2.x; they are wire-compatible."
     },
     "run_id": {
       "type": "string",

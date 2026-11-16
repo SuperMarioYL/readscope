@@ -114,7 +114,7 @@ Agent 命令   readscope mockagent
 
 ## 安装
 
-v0.1 面向 **Linux 容器**运行（需要 `/dev/fuse` 与 `fusermount`）；macOS / Windows 用户通过 Docker 使用（见下文十分钟跑通）。
+v0.2 仍然面向 **Linux 容器**运行（需要 `/dev/fuse` 与 `fusermount`）；macOS / Windows 用户通过 Docker 使用（见下文十分钟跑通）。`readscope version` 打印真实版本：release 二进制、`go install` 构建与 `go build` 本地构建各自输出对应版本（本地构建为 `dev`）。
 
 ```bash
 # 方式一：从 GitHub Release 下载单二进制（goreleaser 产物，附 checksums.txt）
@@ -179,9 +179,9 @@ readscope run -- <agent 命令>       挂载默认拒绝视图并在其中运行
   --no-interactive         被拒读取直接拒绝，不询问（CI 用）
   --docker                 容器编排（m3 里程碑，尚未提供）
 
-readscope inspect <文件|目录>       输出暴露清单摘要（目录会自动取最新一次运行）
+readscope inspect <文件|目录>       输出暴露清单摘要并重放校验（目录取最新一次运行；校验未通过时非零退出）
 readscope init                     扫描仓库生成默认策略（m3 里程碑，尚未提供）
-readscope version                  版本号
+readscope version                  版本号（release / go install / 本地构建各自如实报告）
 ```
 
 环境变量：`READSCOPE_APPROVER` 覆盖授权审批人名字（默认 `terminal`）；`READSCOPE_DEBUG` 开启 FUSE 请求日志。运行时注入的 `READSCOPE_RUN_ID`、`READSCOPE_WORKSPACE`、`READSCOPE_MODEL_TARGET` 名字会记入清单。
@@ -189,7 +189,7 @@ readscope version                  版本号
 ## 策略文件
 
 ```yaml
-default: deny            # v0.1 仅支持 default-deny
+default: deny            # 仅支持 default-deny
 rules:
   # 规则按顺序匹配，第一条命中生效；空 verbs = 显式拒绝
   - glob: ".env*"
@@ -204,7 +204,8 @@ rules:
 
 - 含 `/` 的 glob 匹配工作区相对路径，`**` 跨目录，`*` 不跨目录；以 `/**` 结尾时目录本身也被匹配（保证目录可见可列）；
 - 不含 `/` 的 glob 匹配任意层级的基础文件名（`*.pem` 也覆盖 `certs/server.pem`）；
-- 没被任何规则覆盖的路径一律拒绝；被拒路径不进目录列表，元数据被替换为仅保留类型的占位（`stat` 也不泄露）。
+- 没被任何规则覆盖的路径一律拒绝；被拒路径不进目录列表，元数据被替换为仅保留类型的占位（`stat` 也不泄露）；
+- 硬链接两端都要通过策略：目标必须可写，源必须本身可读（策略允许或持有有效授权）。被拒文件不能被链接到可写路径——那等于把它发布成一个允许读取的新名字。
 
 仓库自带的 [policies/default.yaml](policies/default.yaml) 覆盖了常见敏感路径（`.env*`、`*.pem`、`*.key`、`.aws/`、`.ssh/`、`.git-credentials`、`.git/config`）与常见源码路径，可直接使用或在此基础上调整。
 
@@ -219,7 +220,9 @@ rules:
 └── exposure-manifest-<run_id>.json    # 由判定日志重放生成的暴露清单
 ```
 
-清单格式见 [schemas/exposure-manifest.v0.json](schemas/exposure-manifest.v0.json)（JSON Schema，可用任何校验器校验）。`reads` 记录每个被读取路径的最终判定（`allowed` / `granted` / `denied`），`grants` 记录全部限时授权（含已过期的），`env_var_names` 只记录注入给 Agent 的环境变量名字、绝不记录值。`readscope inspect` 会当场用 `decisions.jsonl` 重放复核清单——两者不一致会明确标出。
+清单格式见 [schemas/exposure-manifest.v0.json](schemas/exposure-manifest.v0.json)（JSON Schema，可用任何校验器校验）。`reads` 记录每个被读取路径的最终判定（`allowed` / `granted` / `denied`），`grants` 记录全部限时授权（含已过期的），`env_var_names` 只记录注入给 Agent 的环境变量名字、绝不记录值。
+
+`readscope inspect` 会当场重放两份日志做校验：`decisions.jsonl` 重放出读取判定，`grants.jsonl` 重放出限时授权，任何一处与清单不一致都会明确标出，并以非零退出码结束——适合放进 CI 当校验步骤。日志存在但已损坏（无法解析）会被报告为"无法校验"，不会被当作"无可校验"而静默放过；只有日志确实不存在时才跳过校验。
 
 ## 各层分工
 
@@ -239,8 +242,9 @@ rules:
 如实声明，不含糊：
 
 - **门面不是沙箱边界**。FUSE 视图约束的是"通过视图的访问"；容器内持有特权的进程（如 root）可以直接触达原始路径，从而绕过视图。演示录制里专门保留了"直读原始路径仍可读"的对照组。ReadScope 的定位是抬高最低限度、留下证据，与沙箱的执行/网络边界互补。
-- **环境变量只记名字，不隐藏值**。值级隐藏与凭据代理是其他工具的领地，v0.1 不做。
-- **单机、单次运行**。清单是 per-run 的本地工件；团队级留存与聚合在 v0.2 托管服务中。
+- **符号链接由内核按进程视角解析**。视图内一个指向视图之外的绝对符号链接会在门面之外被解析，门面不对链接目标做重新定位校验；相对链接会经过视图，因此仍受策略约束。硬链接则两端都受策略约束（v0.2.0 起）。
+- **环境变量只记名字，不隐藏值**。值级隐藏与凭据代理是其他工具的领地，本仓库不做。
+- **单机、单次运行**。清单是 per-run 的本地工件；团队级留存与聚合计划在托管服务中提供（见路线图）。
 - **m1+m2 为当前完成度**。`readscope init` 与 `readscope run --docker` 尚未实现（见路线图），手动容器命令可用。
 - **性能**。FUSE 门面引入单次路径判定的开销，CLI 工作负载下不构成瓶颈；未做基准测试，不做性能承诺。
 
@@ -248,15 +252,16 @@ rules:
 
 - [x] **m1** 容器内默认拒绝视图：策略生效，敏感路径 `open` 即 `EACCES`，原始路径可读（对照组）
 - [x] **m2** 内联限时授权 + 暴露清单：终端 y/N、TTL 自动收回、清单落盘、`inspect` 摘要、判定日志可重放
+- [x] **v0.2.0** 审计可信度加固：关闭硬链接洗白、重放校验覆盖授权记录、损坏日志不再静默跳过、修正 `**/` glob、`readscope version` 如实报告版本
 - [ ] **m3** `readscope init` 一键生成默认策略；`readscope run --docker` 一条命令端到端；Gitee 镜像
-- [ ] **v0.2** 托管策略与授权审批服务器（见[付费](#付费)）：团队策略管理、终端之外的审批流、清单留存与聚合
+- [ ] **v0.3** 托管策略与授权审批服务器（见[付费](#付费)）：团队策略管理、终端之外的审批流、清单留存与聚合
 
 ## 付费
 
 ReadScope 采用开源核心 + 托管服务的模式，收费路径写入公开路线图：
 
 - **开源核心（本仓库）**：CLI、策略格式、暴露清单格式，可自由用于商业环境。
-- **托管策略与授权审批服务器（v0.2 起）**：面向为多个工作区运行 Agent 的团队——集中策略管理、终端之外的审批流（安全负责人审批）、清单留存与按月的聚合审计报表。按**工作区所有者席位**计费：**¥199/席/月（约 $29），5 席起**。前 3 家设计伙伴按 **¥2,000/月** 包价接入，支持对公转账；自服务通道（国际卡 / 微信支付）随后开放。
+- **托管策略与授权审批服务器（v0.3 起）**：面向为多个工作区运行 Agent 的团队——集中策略管理、终端之外的审批流（安全负责人审批）、清单留存与按月的聚合审计报表。按**工作区所有者席位**计费：**¥199/席/月（约 $29），5 席起**。前 3 家设计伙伴按 **¥2,000/月** 包价接入，支持对公转账；自服务通道（国际卡 / 微信支付）随后开放。
 - 清单格式保持开放：托管服务产出与自托管完全相同的 `exposure-manifest`，随时可以带走的合规留痕。
 
 ## 参与贡献

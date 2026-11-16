@@ -114,7 +114,7 @@ The key design decision: **intercept at the filesystem layer with FUSE instead o
 
 ## Install
 
-v0.1 targets **Linux containers** (needs `/dev/fuse` and `fusermount`); macOS and Windows users run it through Docker (see the ten-minute path below).
+v0.2 still targets **Linux containers** (needs `/dev/fuse` and `fusermount`); macOS and Windows users run it through Docker (see the ten-minute path below). `readscope version` reports the real version: release binaries, `go install` builds and local `go build` checkouts each print their own (local checkouts print `dev`).
 
 ```bash
 # Option 1: grab the single binary from GitHub Releases (goreleaser artifacts, checksums.txt included)
@@ -180,9 +180,9 @@ readscope run -- <agent command>       Mount the default-deny view and run the a
   --no-interactive         Deny refused reads without asking (for CI)
   --docker                 Container orchestration (m3 milestone, not yet available)
 
-readscope inspect <file|dir>           Summarize an exposure manifest (a directory picks the newest run)
+readscope inspect <file|dir>           Summarize and replay-verify an exposure manifest (a directory picks the newest run; exits non-zero when verification fails)
 readscope init                     Generate a default policy by scanning the repo (m3, not yet available)
-readscope version                  Print the version
+readscope version                  Print the version (release, go install and local builds each report truthfully)
 ```
 
 Environment variables: `READSCOPE_APPROVER` overrides the recorded approver name (default `terminal`); `READSCOPE_DEBUG` enables FUSE request logging. The injected `READSCOPE_RUN_ID`, `READSCOPE_WORKSPACE` and `READSCOPE_MODEL_TARGET` names are recorded in the manifest.
@@ -190,7 +190,7 @@ Environment variables: `READSCOPE_APPROVER` overrides the recorded approver name
 ## Policy files
 
 ```yaml
-default: deny            # v0.1 supports default-deny only
+default: deny            # default-deny only
 rules:
   # Rules match in order; the first hit wins; empty verbs = explicit deny
   - glob: ".env*"
@@ -205,7 +205,8 @@ Semantics:
 
 - Globs containing `/` match workspace-relative paths, where `**` crosses directories and `*` does not; a pattern ending in `/**` also matches the directory itself (so the directory stays listable);
 - Globs without `/` match the base name at any depth (`*.pem` also covers `certs/server.pem`);
-- Any path no rule covers is denied; denied paths are excluded from listings and their metadata is replaced with a type-only placeholder (`stat` leaks nothing either).
+- Any path no rule covers is denied; denied paths are excluded from listings and their metadata is replaced with a type-only placeholder (`stat` leaks nothing either);
+- Both ends of a hardlink must pass the policy: the destination must be writable and the source must be readable in its own right (policy allow or an active grant). A denied file cannot be relinked to a writable name - that would publish it under a new, readable one.
 
 The shipped [policies/default.yaml](policies/default.yaml) covers the common sensitive paths (`.env*`, `*.pem`, `*.key`, `.aws/`, `.ssh/`, `.git-credentials`, `.git/config`) and common source paths — use it as-is or adapt it.
 
@@ -220,7 +221,9 @@ Every run writes:
 └── exposure-manifest-<run_id>.json    # The exposure manifest, replayed from the decision log
 ```
 
-The format is specified in [schemas/exposure-manifest.v0.json](schemas/exposure-manifest.v0.json) (JSON Schema, validatable with any validator). `reads` holds the final verdict per read path (`allowed` / `granted` / `denied`), `grants` holds every time-limited grant (expired ones included), and `env_var_names` records only the names of the variables the Agent received — never values. `readscope inspect` replays `decisions.jsonl` on the spot to verify the manifest; any mismatch is flagged explicitly.
+The format is specified in [schemas/exposure-manifest.v0.json](schemas/exposure-manifest.v0.json) (JSON Schema, validatable with any validator). `reads` holds the final verdict per read path (`allowed` / `granted` / `denied`), `grants` holds every time-limited grant (expired ones included), and `env_var_names` records only the names of the variables the Agent received — never values.
+
+`readscope inspect` replays both logs to verify the manifest on the spot: `decisions.jsonl` reproduces the read verdicts and `grants.jsonl` reproduces the grants. Any mismatch is flagged explicitly and the command exits non-zero, which makes it usable as a CI check. A log that exists but cannot be parsed is reported as "cannot verify" rather than silently treated as "nothing to verify"; only a genuinely absent log skips verification.
 
 ## Who covers what
 
@@ -240,8 +243,9 @@ These layers are complementary: credential proxies own the values, ReadScope own
 Stated plainly:
 
 - **The facade is not a sandbox boundary**. The FUSE view constrains access that goes through the view; a privileged process inside the container (root, for instance) can reach the backing path directly and bypass the view. The demo recording deliberately keeps the control read of the raw path to show exactly this. ReadScope raises the floor and leaves evidence; it complements a sandbox's execution/network boundary.
-- **Environment variables are recorded by name only; values are not hidden**. Value masking and credential proxying belong to other tools; v0.1 does not do this.
-- **Single machine, single run**. The manifest is a per-run local artifact; team-level retention and aggregation come with the v0.2 hosted service.
+- **Symlinks are resolved by the kernel from the process's view**. An absolute symlink inside the view that points outside it is resolved outside the facade, which does not re-anchor link targets; relative symlinks are resolved through the view and therefore stay policy-checked. Hardlinks are checked at both ends (since v0.2.0).
+- **Environment variables are recorded by name only; values are not hidden**. Value masking and credential proxying belong to other tools; this repo does not do this.
+- **Single machine, single run**. The manifest is a per-run local artifact; team-level retention and aggregation are planned for the hosted service (see the roadmap).
 - **m1+m2 is the current completeness**. `readscope init` and `readscope run --docker` are not implemented yet (see the roadmap); the manual container command works today.
 - **Performance**. The facade adds one policy decision per path operation — negligible for CLI workloads. No benchmarks have been run and no performance claims are made.
 
@@ -249,15 +253,16 @@ Stated plainly:
 
 - [x] **m1** Default-deny view inside a container: policy enforced, sensitive paths get `EACCES` on open, the raw path stays readable (the control)
 - [x] **m2** Inline time-limited grants + exposure manifest: terminal y/N, automatic TTL expiry, manifest on disk, `inspect` summary, decision-log replay verification
+- [x] **v0.2.0** Audit-truthfulness hardening: hardlink laundering closed, replay verification covers the grants, corrupt logs no longer skipped, `**/` glob fixed, `readscope version` reports the real version
 - [ ] **m3** `readscope init` generates a default policy in one step; `readscope run --docker` as a one-command path; a Gitee mirror
-- [ ] **v0.2** Hosted policy and grant-approval server (see [Pricing](#pricing)): team-wide policy management, approvals beyond the terminal, manifest retention and aggregation
+- [ ] **v0.3** Hosted policy and grant-approval server (see [Pricing](#pricing)): team-wide policy management, approvals beyond the terminal, manifest retention and aggregation
 
 ## Pricing
 
 ReadScope is open core plus a hosted service; the paid path is a committed, public roadmap item:
 
 - **Open core (this repo)**: the CLI, the policy format and the exposure-manifest format, free to use in commercial settings.
-- **Hosted policy and grant-approval server (from v0.2)**: for teams running Agents across many workspaces — centralized policy management, approvals beyond the terminal (a security lead can approve), manifest retention and monthly aggregated audit reports. Priced per **workspace-owner seat**: **¥199/seat/month (about $29), 5-seat minimum**. The first three design partners join at a flat **¥2,000/month**, invoiced; self-serve (international cards / WeChat Pay) follows.
+- **Hosted policy and grant-approval server (from v0.3)**: for teams running Agents across many workspaces — centralized policy management, approvals beyond the terminal (a security lead can approve), manifest retention and monthly aggregated audit reports. Priced per **workspace-owner seat**: **¥199/seat/month (about $29), 5-seat minimum**. The first three design partners join at a flat **¥2,000/month**, invoiced; self-serve (international cards / WeChat Pay) follows.
 - The manifest format stays open: the hosted service produces exactly the same `exposure-manifest` as self-hosting, so your audit trail is portable by construction.
 
 ## Contributing

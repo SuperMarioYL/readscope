@@ -81,6 +81,29 @@ func TestFirstMatchWins(t *testing.T) {
 	}
 }
 
+// A "**/" prefix must consume whole directory segments. As ".*" + "/?" it
+// silently widened any rule that used it at the start of a pattern.
+func TestLeadingDoublestarPolicyDecide(t *testing.T) {
+	p, err := Load(writeTemp(t, `default: deny
+rules:
+  - glob: "**/secret.txt"
+    verbs: [read]
+`))
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	for _, path := range []string{"secret.txt", "a/secret.txt", "a/b/secret.txt"} {
+		if got := p.Decide(path, Read); got != Allow {
+			t.Errorf("Decide(%q, read) = %v, want allow", path, got)
+		}
+	}
+	for _, path := range []string{"mysecret.txt", "a/mysecret.txt", "secret.txt.bak"} {
+		if got := p.Decide(path, Read); got != Deny {
+			t.Errorf("Decide(%q, read) = %v, want deny (the rule must not widen)", path, got)
+		}
+	}
+}
+
 func TestLoadRejectsNonDenyDefault(t *testing.T) {
 	_, err := Load(writeTemp(t, "default: allow\nrules:\n  - glob: \"*\"\n"))
 	if err == nil || !strings.Contains(err.Error(), "default") {
@@ -155,6 +178,15 @@ func TestGlobSemantics(t *testing.T) {
 		{"main?.go", "main1.go", true},
 		{"main?.go", "main12.go", false},
 		{"**", "anything/at/all", true},
+		{"**/secret.txt", "secret.txt", true},
+		{"**/secret.txt", "a/secret.txt", true},
+		{"**/secret.txt", "a/b/secret.txt", true},
+		{"**/secret.txt", "mysecret.txt", false},
+		{"**/secret.txt", "a/mysecret.txt", false},
+		{"**/config", "myconfig", false},
+		{"**/.env", ".env", true},
+		{"**/.env", "sub/.env", true},
+		{"**/.env", "x.env", false},
 	}
 	for _, c := range cases {
 		m, err := compileGlob(c.pattern)

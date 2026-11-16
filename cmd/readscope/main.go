@@ -23,6 +23,8 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"regexp"
+	"runtime/debug"
 	"strings"
 	"syscall"
 	"time"
@@ -37,8 +39,34 @@ import (
 	"github.com/SuperMarioYL/readscope/internal/runner"
 )
 
-// version is overridden at release time via -ldflags "-X main.version=...".
+// version is overridden at release time via -ldflags "-X main.version=...";
+// resolveVersion falls back to the module version for go install builds.
 var version = "dev"
+
+// resolveVersion picks the version to report. The linker-injected value wins
+// when a release build set it; otherwise a clean module version recorded by
+// `go install <module>@vX.Y.Z` is used, so the documented go-install path does
+// not report the "dev" sentinel. Pseudo-versions from `go build` in a checkout
+// (v0.1.1-0.<timestamp>-<hash>+dirty) are not releases and stay "dev".
+func resolveVersion(linked, build string) string {
+	if linked != "" && linked != "dev" {
+		return linked
+	}
+	if releaseVersion.MatchString(build) {
+		return strings.TrimPrefix(build, "v")
+	}
+	return "dev"
+}
+
+// releaseVersion matches a tagged module version, e.g. "v0.2.0".
+var releaseVersion = regexp.MustCompile(`^v\d+\.\d+\.\d+$`)
+
+func reportedVersion() string {
+	if bi, ok := debug.ReadBuildInfo(); ok {
+		return resolveVersion(version, bi.Main.Version)
+	}
+	return resolveVersion(version, "")
+}
 
 func main() {
 	root := newRootCmd()
@@ -58,7 +86,7 @@ func newRootCmd() *cobra.Command {
   - 被拒读取在终端内联申请限时授权（只读、TTL 到期自动收回）；
   - 运行结束自动产出 exposure-manifest JSON，readscope inspect 输出摘要。
 
-v0.1 在 Linux 容器内使用（需要 /dev/fuse 与 fusermount）。`,
+v0.2 在 Linux 容器内使用（需要 /dev/fuse 与 fusermount）。`,
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}
@@ -75,7 +103,7 @@ func newVersionCmd() *cobra.Command {
 		Use:   "version",
 		Short: "打印版本号",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("readscope %s\n", version)
+			fmt.Printf("readscope %s\n", reportedVersion())
 		},
 	}
 }
@@ -106,7 +134,7 @@ exposure-manifest-<run_id>.json 并打印摘要。`,
   readscope run --model deepseek-v4.1-flash -- readscope mockagent`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if flags.docker {
-				return fmt.Errorf("run --docker 计划在 v0.1 的 m3 里程碑提供（一条命令端到端容器运行）；" +
+				return fmt.Errorf("run --docker 计划在 m3 里程碑提供（一条命令端到端容器运行）；" +
 					"当前版本请按 README「在容器内运行」一节的手动 docker 命令执行")
 			}
 			if len(args) == 0 {
@@ -285,11 +313,10 @@ func runAgent(flags *runFlags, agentCmd []string) error {
 
 	fmt.Fprintln(os.Stderr)
 	replay, verifyErr := inspect.VerifyReplay(&m, manifestPath)
-	var replayPtr *inspect.ReplayResult
-	if verifyErr == nil {
-		replayPtr = &replay
+	if verifyErr != nil {
+		fmt.Fprintf(os.Stderr, "[readscope] 警告: 重放校验失败: %v\n", verifyErr)
 	}
-	fmt.Fprint(os.Stderr, inspect.Summarize(&m, manifestPath, replayPtr))
+	fmt.Fprint(os.Stderr, inspect.Summarize(&m, manifestPath, &replay))
 	fmt.Fprintf(os.Stderr, "[readscope] 运行结束，退出码 %d\n", exitCode)
 
 	if runErr != nil {
@@ -356,11 +383,15 @@ func newInspectCmd() *cobra.Command {
 				return err
 			}
 			replay, verifyErr := inspect.VerifyReplay(m, path)
-			var replayPtr *inspect.ReplayResult
-			if verifyErr == nil {
-				replayPtr = &replay
+			fmt.Print(inspect.Summarize(m, path, &replay))
+			// inspect exists to verify: an artifact that cannot be replayed,
+			// or that disagrees with its logs, must not exit 0.
+			if verifyErr != nil {
+				return verifyErr
 			}
-			fmt.Print(inspect.Summarize(m, path, replayPtr))
+			if replay.Verified && !replay.Match {
+				return fmt.Errorf("暴露清单未通过重放校验: %s", replay.Problem)
+			}
 			return nil
 		},
 	}
@@ -374,7 +405,7 @@ func newInitCmd() *cobra.Command {
 		Short: "扫描仓库并生成默认策略（m3 里程碑，尚未提供）",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return errors.New(
-				"readscope init 计划在 v0.1 的 m3 里程碑提供（扫描仓库自动生成默认策略）；" +
+				"readscope init 计划在 m3 里程碑提供（扫描仓库自动生成默认策略）；" +
 					"当前版本请复制仓库自带的 policies/default.yaml 并按需调整")
 		},
 	}

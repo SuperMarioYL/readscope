@@ -8,7 +8,9 @@ package inspect
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
@@ -44,21 +46,40 @@ type ReplayResult struct {
 	// Verified is true when a decision log was found next to the
 	// manifest and replayed.
 	Verified bool
-	// Match is true when replaying the log reproduces the manifest.
+	// Match is true when replaying the logs reproduces the manifest,
+	// reads and grants alike.
 	Match bool
 	// LogPath is the decision log used (or attempted).
 	LogPath string
+	// GrantsLogPath is the grants log used (or attempted).
+	GrantsLogPath string
+	// Problem explains why verification could not complete or what did
+	// not match. Empty when the manifest verified cleanly.
+	Problem string
 }
 
-// VerifyReplay replays the decision log that sits next to the manifest
-// and reports whether it reproduces the same manifest.
+// VerifyReplay replays the logs that sit next to the manifest and reports
+// whether they reproduce it: decisions.jsonl for the read records and
+// grants.jsonl for the grants. An absent log means there is nothing to
+// verify; a log that exists but cannot be read is an error, because a
+// tampered log must never read as a clean artifact.
 func VerifyReplay(m *manifest.Manifest, manifestPath string) (ReplayResult, error) {
-	res := ReplayResult{LogPath: filepath.Join(filepath.Dir(manifestPath), "decisions.jsonl")}
+	res := ReplayResult{
+		LogPath:       filepath.Join(filepath.Dir(manifestPath), "decisions.jsonl"),
+		GrantsLogPath: filepath.Join(filepath.Dir(manifestPath), "grants.jsonl"),
+	}
+
 	decs, err := manifest.ReadDecisions(res.LogPath)
-	if err != nil {
+	switch {
+	case err == nil:
+	case errors.Is(err, fs.ErrNotExist):
 		return res, nil // no log to verify against
+	default:
+		res.Problem = "判定日志损坏，无法重放校验"
+		return res, fmt.Errorf("replay %s: %w", res.LogPath, err)
 	}
 	res.Verified = true
+
 	replayed := manifest.FromDecisions(manifest.Header{
 		RunID:        m.RunID,
 		AgentCmd:     m.AgentCmd,
@@ -68,8 +89,26 @@ func VerifyReplay(m *manifest.Manifest, manifestPath string) (ReplayResult, erro
 		StartedAt:    m.StartedAt,
 		EndedAt:      m.EndedAt,
 	}, decs)
-	replayed.SetGrants(m.Grants)
+
+	grants, err := manifest.ReadGrants(res.GrantsLogPath)
+	switch {
+	case err == nil:
+		replayed.SetGrants(grants)
+	case errors.Is(err, fs.ErrNotExist):
+		if len(m.Grants) > 0 {
+			res.Problem = "授权记录 grants.jsonl 缺失，清单中的限时授权无法校验"
+			return res, nil
+		}
+		replayed.SetGrants(nil)
+	default:
+		res.Problem = "授权记录损坏，无法重放校验"
+		return res, fmt.Errorf("replay %s: %w", res.GrantsLogPath, err)
+	}
+
 	res.Match = manifestsEqual(m, &replayed)
+	if !res.Match {
+		res.Problem = "清单与日志重放不一致"
+	}
 	return res, nil
 }
 
@@ -141,10 +180,13 @@ func Summarize(m *manifest.Manifest, manifestPath string, replay *ReplayResult) 
 			len(m.EnvVarNames), strings.Join(m.EnvVarNames, ", "))
 	}
 
-	if replay != nil && replay.Verified {
-		if replay.Match {
+	if replay != nil {
+		switch {
+		case replay.Problem != "":
+			fmt.Fprintf(&b, "重放校验     %s\n", replay.Problem)
+		case replay.Verified && replay.Match:
 			fmt.Fprintln(&b, "重放校验     判定日志重放与清单一致")
-		} else {
+		case replay.Verified:
 			fmt.Fprintln(&b, "重放校验     判定日志重放与清单不一致")
 		}
 	}

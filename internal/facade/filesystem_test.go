@@ -177,6 +177,35 @@ func TestJoinRelRejectsEscape(t *testing.T) {
 	}
 }
 
+// A hardlink must not launder a denied file into an allowed name: the source
+// has to be readable on its own, not just the destination writable.
+func TestLinkErrno(t *testing.T) {
+	f, _, _ := newTestFacade(t, &recordingBroker{})
+
+	if errno := f.linkErrno("src/main.go", "src/copy.go"); errno != 0 {
+		t.Errorf("allowed source -> writable destination must be admitted, got %v", errno)
+	}
+	if errno := f.linkErrno(".env", "src/leak"); errno != syscall.EACCES {
+		t.Errorf("denied source -> writable destination must be EACCES, got %v", errno)
+	}
+	if errno := f.linkErrno("src/main.go", ".env"); errno != syscall.EACCES {
+		t.Errorf("writable source -> denied destination must be EACCES, got %v", errno)
+	}
+
+	now := time.Now()
+	if err := f.opts.Grants.Add(grant.Grant{
+		Path:      ".env",
+		TTL:       "30m",
+		GrantedAt: now,
+		ExpiresAt: now.Add(30 * time.Minute),
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if errno := f.linkErrno(".env", "src/leak"); errno != 0 {
+		t.Errorf("granted source -> writable destination must be admitted, got %v", errno)
+	}
+}
+
 func TestGrantExpiryRehides(t *testing.T) {
 	f, _, _ := newTestFacade(t, &recordingBroker{})
 	base := time.Now()

@@ -1,6 +1,8 @@
 package inspect
 
 import (
+	"encoding/json"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -40,21 +42,44 @@ func buildManifest(t *testing.T, dir string, withLog bool) (*manifest.Manifest, 
 		if err := log.Close(); err != nil {
 			t.Fatal(err)
 		}
+		grants, err := os.OpenFile(filepath.Join(dir, "grants.jsonl"),
+			os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, g := range grantsOf(started) {
+			line, err := json.Marshal(g)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := grants.Write(append(line, '\n')); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if err := grants.Close(); err != nil {
+			t.Fatal(err)
+		}
 	}
 	m := manifest.FromDecisions(h, decs)
-	m.SetGrants([]manifest.GrantRecord{{
+	m.SetGrants(grantsOf(started))
+	path, err := m.Save(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return &m, path
+}
+
+// grantsOf is the fixture's grant set: it is both written to grants.jsonl and
+// attached to the manifest, so a clean artifact verifies end to end.
+func grantsOf(started time.Time) []manifest.GrantRecord {
+	return []manifest.GrantRecord{{
 		Path:      ".env",
 		TTL:       "30m",
 		GrantedAt: started.Add(5 * time.Second),
 		ExpiresAt: started.Add(35 * time.Minute),
 		Approver:  "terminal",
 		Reason:    "approved in terminal",
-	}})
-	path, err := m.Save(dir)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return &m, path
+	}}
 }
 
 func TestLoadFromDirAndFile(t *testing.T) {
@@ -118,6 +143,85 @@ func TestVerifyReplayWithoutLog(t *testing.T) {
 	}
 	if res.Verified || res.Match {
 		t.Fatal("without a decision log there is nothing to verify")
+	}
+}
+
+// The grants are the "why was this secret exposed" record. They must come
+// from grants.jsonl, not from the manifest under test.
+func TestVerifyReplayDetectsGrantTampering(t *testing.T) {
+	dir := t.TempDir()
+	m, file := buildManifest(t, dir, true)
+	if res, err := VerifyReplay(m, file); err != nil || !res.Match {
+		t.Fatalf("baseline must verify: %+v, %v", res, err)
+	}
+
+	m.Grants[0].Approver = "someone-else"
+	res, err := VerifyReplay(m, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !res.Verified || res.Match {
+		t.Fatalf("tampered grants must not verify: %+v", res)
+	}
+	if res.Problem == "" {
+		t.Fatal("a failed verification must explain itself")
+	}
+}
+
+func TestVerifyReplayMissingGrantsLog(t *testing.T) {
+	dir := t.TempDir()
+	m, file := buildManifest(t, dir, true)
+	if err := os.Remove(filepath.Join(dir, "grants.jsonl")); err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := VerifyReplay(m, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !res.Verified || res.Match || res.Problem == "" {
+		t.Fatalf("a manifest claiming grants without a grants log must not verify: %+v", res)
+	}
+	if !strings.Contains(res.Problem, "grants.jsonl") {
+		t.Errorf("problem must name the missing log: %q", res.Problem)
+	}
+}
+
+// A corrupt log must read as "cannot verify", never as "nothing to verify".
+func TestVerifyReplayCorruptDecisionLog(t *testing.T) {
+	dir := t.TempDir()
+	m, file := buildManifest(t, dir, true)
+	if err := os.WriteFile(filepath.Join(dir, "decisions.jsonl"), []byte("{\"not\":\"a decision\"}\n{garbage\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := VerifyReplay(m, file)
+	if err == nil {
+		t.Fatal("a corrupt decision log must be an error, not a silent skip")
+	}
+	if res.Match || res.Problem == "" {
+		t.Fatalf("result must carry the failure: %+v", res)
+	}
+	text := Summarize(m, file, &res)
+	if !strings.Contains(text, "重放校验") || strings.Contains(text, "一致") {
+		t.Errorf("summary must report the unverifiable artifact, got:\n%s", text)
+	}
+}
+
+func TestSummarizeReportsUnverifiable(t *testing.T) {
+	dir := t.TempDir()
+	m, file := buildManifest(t, dir, true)
+	if err := os.WriteFile(filepath.Join(dir, "grants.jsonl"), []byte("{broken\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := VerifyReplay(m, file)
+	if err == nil {
+		t.Fatal("a corrupt grants log must be an error")
+	}
+	text := Summarize(m, file, &res)
+	if !strings.Contains(text, "授权记录损坏") {
+		t.Errorf("summary must name the corrupt grants log, got:\n%s", text)
 	}
 }
 

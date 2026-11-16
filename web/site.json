@@ -1,5 +1,10 @@
 {
   "schema": 3,
+  "meta": {
+    "content_version": "v0.2.0",
+    "source_version": "v0.2.0",
+    "generated_at": "2026-11-17"
+  },
   "name": "ReadScope",
   "github": "https://github.com/SuperMarioYL/readscope",
   "host": "readscope.lei6393.com",
@@ -68,12 +73,12 @@
         "en": "One exposure manifest per run"
       },
       "body": {
-        "zh": "运行结束自动落盘 exposure-manifest JSON：每个路径的读取判定、全部限时授权、注入的环境变量名字与策略摘要，且可由判定日志重放复核。",
-        "en": "At run end an exposure-manifest JSON lands on disk: per-path read verdicts, all inline grants, injected env var names and the policy digest - replay-verifiable from the decision log."
+        "zh": "运行结束自动落盘 exposure-manifest JSON：每个路径的读取判定、全部限时授权、注入的环境变量名字与策略摘要；读取判定与授权记录分别由 decisions.jsonl、grants.jsonl 重放校验。",
+        "en": "At run end an exposure-manifest JSON lands on disk: per-path read verdicts, all inline grants, injected env var names and the policy digest - read verdicts and grants are replay-verified from decisions.jsonl and grants.jsonl."
       },
       "chips": [
         "› 机器可查的合规留痕",
-        "› readscope inspect 一屏摘要"
+        "› readscope inspect 重放校验，失败非零退出"
       ]
     }
   ],
@@ -195,16 +200,16 @@
   },
   "limitations": [
     {
-      "zh": "v0.1 面向 Linux 容器（需要 /dev/fuse 与 fusermount）；macOS/Windows 用户通过 Docker 运行。",
-      "en": "v0.1 targets Linux containers (/dev/fuse and fusermount); macOS and Windows users run it through Docker."
+      "zh": "v0.2 面向 Linux 容器（需要 /dev/fuse 与 fusermount）；macOS/Windows 用户通过 Docker 运行。",
+      "en": "v0.2 targets Linux containers (/dev/fuse and fusermount); macOS and Windows users run it through Docker."
     },
     {
       "zh": "门面是工作区视图的执行层，不是沙箱边界：能直接触达原始路径的特权进程在门面之外，README 有完整边界声明。",
       "en": "The facade enforces the workspace view, it is not a sandbox boundary: a privileged process that reaches the backing path directly is outside its reach - see the README boundary notes."
     },
     {
-      "zh": "清单记录环境变量的名字，不隐藏其值；值级隐藏与凭据代理在 v0.1 范围之外。",
-      "en": "The manifest records env variable names, it does not hide values; value masking and credential proxying are out of scope for v0.1."
+      "zh": "清单记录环境变量的名字，不隐藏其值；值级隐藏与凭据代理属于其他层，本仓库不做。",
+      "en": "The manifest records env variable names, it does not hide values; value masking and credential proxying belong to other layers and are not part of this repo."
     }
   ],
   "cta": {
@@ -298,8 +303,8 @@
           "en": "The manifest replay-verifies"
         },
         "body": {
-          "zh": "判定实时追加，结束时由日志重放生成清单；readscope inspect 会当场复核一次。改过清单，重放立刻对不上。",
-          "en": "Decisions append in real time and the manifest is derived by replay at the end; readscope inspect re-verifies on the spot. Edit the manifest and the replay stops matching."
+          "zh": "判定与授权实时追加，结束时由日志重放生成清单；readscope inspect 会当场分别重放 decisions.jsonl 与 grants.jsonl。改过清单或日志损坏都会被发现，校验未通过时非零退出。",
+          "en": "Decisions and grants append in real time and the manifest is derived by replay at the end; readscope inspect replays decisions.jsonl and grants.jsonl on the spot. Edit the manifest or corrupt a log and it shows; verification failure exits non-zero."
         },
         "code": "readscope inspect .readscope/runs"
       }
